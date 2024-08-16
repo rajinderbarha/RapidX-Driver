@@ -1,0 +1,39 @@
+{
+    "message": "Ride accepted by driver",
+    "rideDetails": {
+        "user_origin": {
+            "longitude": 76.7794,
+            "latitude": 30.7333
+        },
+        "user_destination": {
+            "longitude": 56.7794,
+            "latitude": 35.7333
+        },
+        "_id": "66b9b5b36a231a558018d851",
+        "user_id": "66b1c305d27b9a0a022c6005",
+        "distance": 10,
+        "duration": 8,
+        "dropAddress": "MPR8+QCJ, Himalaya Marg, Sector 69, Sahibzada Ajit Singh Nagar, Punjab 140308, India",
+        "pickupAddress": "PP6C+FHR, Phase 3B-1, Sector 60, Sahibzada Ajit Singh Nagar, Punjab 160059, India",
+        "fares": 136,
+        "status": "accepted",
+        "createdAt": "2024-08-12T07:11:47.600Z",
+        "updatedAt": "2024-08-12T12:30:39.218Z",
+        "__v": 0,
+        "driver_details": {
+            "_id": "66b9f461091131eca3542607",
+            "phone_number": 91869562417,
+            "name": "rajinder singh",
+            "createdAt": "2024-08-12T11:39:13.827Z",
+            "updatedAt": "2024-08-12T11:48:46.691Z",
+            "__v": 0,
+            "email": "sunnygrover463@gmail.com",
+            "gender": "male",
+            "profile_picture": "https://res.cloudinary.com/dr1b4ezct/image/upload/v1723463325/driver_profile_pictures/azrw5nqox5pmvuzkyhir.jpg",
+            "rating": 5,
+            "vehicle_image": "https://res.cloudinary.com/dr1b4ezct/image/upload/v1723463326/vehicle_images/umgeyneoslouganaswt2.jpg",
+            "vehicle_plate": "pb 65  l 1504",
+            "vehicle_type": "bike"
+        }
+    }
+}

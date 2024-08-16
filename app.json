@@ -18,10 +18,21 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "package": "com.trainee05.Driver_App",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCV2NRNl0uVeY37ID1gIoYgJexr9SBDn2Q"
+        }
       }
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0ee28743-017c-4df7-8c9d-d6b2353091a4"
+      }
     }
   }
 }
