@@ -5,16 +5,16 @@ import { colors } from "../../constants/colors";
 const { width, height } = Dimensions.get('window');
 interface ButtonProps {
   style?: ViewStyle;
-  iconName: any;
   text: string;
   onPress: () => void;
+  disabled? : boolean 
 }
 
 
 
-export default function OrangeButton({ onPress, text, style }: ButtonProps) {
+export default function OrangeButton({ onPress, text, style, disabled  }: ButtonProps) {
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.container]}>
+    <TouchableOpacity onPress={onPress} style={[styles.container]} disabled={disabled}>
       <View style={[styles.btn, style]}>
         <Text style={styles.text}>{text}</Text>
         <View style={styles.iconContainer}>

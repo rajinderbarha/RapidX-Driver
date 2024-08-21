@@ -31,7 +31,7 @@ export default function SelectLocationButton({
       accessible={true}
       accessibilityLabel={text}
     >
-      <View style={[styles.btn, style]}>
+    <View style={[styles.btn, style]}>
         <MaterialIcons name={iconName} size={26} color="black" />
         <Text style={styles.text}>{text}</Text>
       </View>

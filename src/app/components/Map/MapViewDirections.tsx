@@ -1,6 +1,7 @@
-import React, { useRef } from "react";
+import React, { useContext, useRef } from "react";
 import { Dimensions } from "react-native";
 import MapViewDirections from "react-native-maps-directions";
+import { RideContext } from "../../../store/RideContext";
 
 const GOOGLE_API_kEY = "AIzaSyCV2NRNl0uVeY37ID1gIoYgJexr9SBDn2Q";
 const { width, height } = Dimensions.get("window");
@@ -14,7 +15,7 @@ interface DirectionProps {
     latitude: number;
     longitude: number;
   };
-  reff: any;
+  reff: React.RefObject<any>;
   color: string;
 }
 
@@ -24,7 +25,9 @@ export default function AddMapViewDirections({
   reff,
   color,
 }: DirectionProps) {
-  const directionsRef = useRef();
+
+  const {setNearPickupLocation} = useContext(RideContext)
+
 
   return (
     <MapViewDirections
@@ -47,12 +50,16 @@ export default function AddMapViewDirections({
         );
       }}
       onReady={(result) => {
+        console.log('result : ', result.distance)
+        if(result.distance < 0.050){
+          setNearPickupLocation(true)
+        }
         reff.current?.fitToCoordinates(result.coordinates, {
           edgePadding: {
             right: width / 20,
-            bottom: height / 20,
+            bottom: height / 35,
             left: width / 20,
-            top: height / 20,
+            top: height / 25,
           },
         });
       }}

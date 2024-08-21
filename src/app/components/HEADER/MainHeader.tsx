@@ -2,8 +2,13 @@ import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import IconButton from "../../../ui/IconButton";
+import { useNavigation } from "@react-navigation/native";
+
 
 export default function MainHeader() {
+
+  const navigation = useNavigation<any>()
+
   return (
     <View style={styles.root}>
       <View style={styles.btn}>
@@ -11,7 +16,7 @@ export default function MainHeader() {
           name="menu"
           size={28}
           color="grey"
-          onPress={() => console.log("Menu pressed")}
+          onPress={() => navigation.toggleDrawer() }
         />
       </View>
       <Pressable

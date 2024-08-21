@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { StyleSheet, View, Image } from "react-native";
 import MapView from "react-native-maps";
 import AddMarker from "./AddMarker";
 import AddMapViewDirections from "./MapViewDirections";
 import MapViewComponent from "./MapViewComponent";
+import { LocationContext } from "../../../store/LocationContext";
+import { RideContext } from "../../../store/RideContext";
+import GifImage from "./GifImage";
 
 interface MapProps {
   location: {
@@ -15,34 +18,86 @@ interface MapProps {
 }
 
 export default function Map({ reff, markerType }: MapProps) {
+  const { location } = useContext(LocationContext);
+  const { rideConfirmed, riderDetails, reachedPickupLocation } =
+    useContext(RideContext);
+
+    function currentDestination(): { latitude: number; longitude: number } | null {
+      if (riderDetails) {
+        if (reachedPickupLocation) {
+          return {
+            latitude: riderDetails.dropLocation.latitude,
+            longitude: riderDetails.dropLocation.longitude,
+          };
+        } else {
+          return {
+            latitude: riderDetails.pickupLocation.latitude,
+            longitude: riderDetails.pickupLocation.longitude,
+          };
+        }
+      }
+      return null;
+    }
+
+const destination = currentDestination()
+
   return (
     <MapViewComponent reff={reff} markerType={markerType}>
       {/* Placeholder for directions */}
-      <AddMapViewDirections
-        color="blue"
-        reff={reff}
-        origin={{ latitude: 0, longitude: 0 }}
-        destination={{ latitude: 0, longitude: 0 }}
-      />
+      {location && rideConfirmed && riderDetails && destination &&(
+        <AddMapViewDirections
+          color="blue"
+          reff={reff}
+          origin={{
+            latitude: location?.coords.latitude,
+            longitude: location?.coords.longitude,
+          }}
+          destination={destination}
+        />
+      )}
 
-      {/* Placeholder for markers */}
-      <AddMarker
-        color={"#1979e7"}
-        location={{ latitude: 0, longitude: 0 }}
-        image={<Image style={styles.markerImage} source={require("../../../../assets/bike.png")} />}
-      />
+      {riderDetails && (
+        <AddMarker
+          color={"#1979e7"}
+          location={{
+            latitude: riderDetails.pickupLocation.latitude,
+            longitude: riderDetails.pickupLocation.longitude,
+          }}
+          image={
+            <GifImage
+              // style={styles.markerImage}
+              source={require("../../../../assets/data/greenPulsee.gif")}
+            />
+          }
+        />
+      )}
 
-      <AddMarker
-        color={"red"}
-        location={{ latitude: 0, longitude: 0 }}
-        image={<Image style={styles.markerImage} source={require("../../../../assets/bike.png")} />}
-      />
+{riderDetails && (
+        <AddMarker
+          color={"red"}
+          location={{
+            latitude: riderDetails.dropLocation.latitude,
+            longitude: riderDetails.dropLocation.longitude,
+          }}
+          image={
+            <GifImage
+              // style={styles.markerImage}
+              source={require("../../../../assets/data/redPulsee.gif")}
+            />
+          }
+        />
+      )}
 
       {/* Additional marker example */}
       <AddMarker
         color="brown"
         location={{ latitude: 0, longitude: 0 }}
-        image={<Image style={styles.markerImage} source={require("../../../../assets/bike.png")} />}
+        image={
+          <Image
+            style={styles.markerImage}
+            source={require("../../../../assets/bike.png")}
+          />
+        }
       />
     </MapViewComponent>
   );
