@@ -2,6 +2,8 @@ import React, { useContext, useRef } from "react";
 import { Dimensions } from "react-native";
 import MapViewDirections from "react-native-maps-directions";
 import { RideContext } from "../../../store/RideContext";
+import { LocationContext } from "../../../store/LocationContext";
+import calculateDistance from "../../../../util/calculateDistance";
 
 const GOOGLE_API_kEY = "AIzaSyCV2NRNl0uVeY37ID1gIoYgJexr9SBDn2Q";
 const { width, height } = Dimensions.get("window");
@@ -26,7 +28,9 @@ export default function AddMapViewDirections({
   color,
 }: DirectionProps) {
 
-  const {setNearPickupLocation} = useContext(RideContext)
+  const {setNearPickupLocation, setNearDropLocation, reachedPickupLocation} = useContext(RideContext)
+const {setDistance} = useContext(LocationContext)
+
 
 
   return (
@@ -50,8 +54,15 @@ export default function AddMapViewDirections({
         );
       }}
       onReady={(result) => {
-        console.log('result : ', result.distance)
-        if(result.distance < 0.050){
+        const currentLocation = result.legs[0].start_location;
+        const endLocation = result.legs[0].end_location;
+        const distance = calculateDistance(currentLocation,endLocation);
+        console.log('result : ', distance)
+        setDistance(distance.toFixed(2))
+        if(reachedPickupLocation && distance < 0.100){
+          setNearDropLocation(true)
+        }
+        if( distance < 0.050){
           setNearPickupLocation(true)
         }
         reff.current?.fitToCoordinates(result.coordinates, {

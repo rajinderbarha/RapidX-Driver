@@ -19,7 +19,7 @@ export default function WelcomeScreen() {
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.text}>TRAVEL WITH SAFETY</Text>
-        <OrangeButton iconName={''} onPress={toAuthScreen} text={"Let's Go"} />
+        <OrangeButton onPress={toAuthScreen} text={"Let's Go"} />
       </View>
     </View>
   );

@@ -23,11 +23,15 @@ import RideRequestModal from "./src/app/components/OnScreenModals/RideRequestMod
 import RideContextProvide, { RideContext } from "./src/store/RideContext";
 import RideCancelScreen from "./src/app/screen/RideCancelScreen";
 import CurrentRideDetailsScreen from "./src/app/screen/CurrentRideDetailsScreen";
+import AuthenticationContextProvider, {
+  useAuth,
+} from "./src/store/AuthenticationContext";
+import UpdateDetailsScreen from "./src/auth/Screens/Updatedetails";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
-function AuthStack() {
+export function AuthStack() {
   return (
     <Stack.Navigator
       initialRouteName="Welcome"
@@ -51,10 +55,22 @@ function AuthStack() {
           ),
         }}
       />
+    </Stack.Navigator>
+  );
+}
+
+function ApprovalStack() {
+  return (
+    <Stack.Navigator>
       <Stack.Screen
         name="NewUser"
         component={NewUserProfileScreen}
         options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="UpdateDetails"
+        component={UpdateDetailsScreen}
+        // options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
@@ -71,89 +87,91 @@ function AuthenticatedStack() {
         component={MainScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen name="Ride Cancel" component={RideCancelScreen}/>
-      <Stack.Screen name="Current Ride Details" component={CurrentRideDetailsScreen} options={{presentation : 'modal'}}/>
+      <Stack.Screen name="Ride Cancel" component={RideCancelScreen} />
+      <Stack.Screen
+        name="Current Ride Details"
+        component={CurrentRideDetailsScreen}
+        options={{ presentation: "modal" }}
+      />
     </Stack.Navigator>
   );
 }
 
 function DrawerStack() {
-
-  
-    const rideDetails = {
-      user_name : 'Vishal',
-      user_origin: {
-        longitude: 76.7794,
-        latitude: 30.7333,
-      },
-      user_destination: {
-        longitude: 76.7906,
-        latitude: 30.7049,
-      },
-      _id: "66b9b5b36a231a558018d851",
-      user_id: "66b1c305d27b9a0a022c6005",
-      distance: 10,
-      duration: 8,
-      dropAddress: "MPR8+QCJ, Himalaya Marg, Sector 69, Sahibzada Ajit Singh Nagar, Punjab 140308, India",
-      pickupAddress: "PP6C+FHR, Phase 3B-1, Sector 60, Sahibzada Ajit Singh Nagar, Punjab 160059, India",
-      fares: 136,
-      status: "accepted",
-      createdAt: "2024-08-12T07:11:47.600Z",
-      updatedAt: "2024-08-12T12:30:39.218Z",
-      __v: 0,
-    }
- 
-
+  const rideDetails = {
+    userName: "Vishal",
+    user_origin: {
+      longitude: 76.7793878,
+      latitude: 30.7333196,
+    },
+    user_destination: {
+      longitude: 76.7906,
+      latitude: 30.7049,
+    },
+    user_id: "66b1c305d27b9a0a022c6005",
+    distance: 10,
+    duration: 8,
+    dropAddress:
+      "MPR8+QCJ, Himalaya Marg, Sector 69, Sahibzada Ajit Singh Nagar, Punjab 140308, India",
+    pickupAddress:
+      "PP6C+FHR, Phase 3B-1, Sector 60, Sahibzada Ajit Singh Nagar, Punjab 160059, India",
+  };
 
   const [isVisible, setIsVisible] = useState(true);
-const {setRiderDetails, setRideConfirmed} = useContext(RideContext)
+  const { setRiderDetails, setRideConfirmed, incomingRide, setIncomingRide } =
+    useContext(RideContext);
 
   const handleConfirm = () => {
-    setRiderDetails({
-      name : rideDetails.user_name,
-      dropLocation : rideDetails.user_destination,
-      pickupLocation : rideDetails.user_origin
-    })
-    setRideConfirmed(true)
-    setIsVisible(false);
-    
+    setRiderDetails(rideDetails);
+    setRideConfirmed(true);
+    setIncomingRide(false);
   };
 
   const handleCancel = () => {
-    setIsVisible(false);
+    setIncomingRide(false);
     // Handle ride cancellation logic here
   };
 
-
   return (
     <>
-    <RideRequestModal isVisible={isVisible} onConfirm={handleConfirm} onCancel={handleCancel} requestDetails={{name : 'vishal'}}/>
-    <Drawer.Navigator
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
-    >
-
-      <Drawer.Screen
-        name="Home"
-        component={AuthenticatedStack}
-        options={{ headerShown: false }}
+      <RideRequestModal
+        isVisible={incomingRide}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        requestDetails={{ name: "vishal" }}
       />
-      <Drawer.Screen name="RideDetails" component={RideDetailsScreen} />
-      <Drawer.Screen name="YourEarnings" component={YourEarningsScreen} />
-      <Drawer.Screen name="RideHistory" component={RideHistoryScreen} />
-      <Drawer.Screen name="LegalAndTerms" component={LegalAndTermsScreen} />
-      <Drawer.Screen name="ContactUs" component={ContactUsScreen} />
-      <Drawer.Screen name="Profile" component={ProfileScreen} />
-    </Drawer.Navigator>
+      <Drawer.Navigator
+        drawerContent={(props) => <CustomDrawerContent {...props} />}
+      >
+        <Drawer.Screen
+          name="Home"
+          component={AuthenticatedStack}
+          options={{ headerShown: false }}
+        />
+        <Drawer.Screen name="RideDetails" component={RideDetailsScreen} />
+        <Drawer.Screen name="YourEarnings" component={YourEarningsScreen} />
+        <Drawer.Screen name="RideHistory" component={RideHistoryScreen} />
+        <Drawer.Screen name="LegalAndTerms" component={LegalAndTermsScreen} />
+        <Drawer.Screen name="ContactUs" component={ContactUsScreen} />
+        <Drawer.Screen name="Profile" component={ProfileScreen} />
+      </Drawer.Navigator>
     </>
   );
 }
 
 function Navigation() {
+  const { isAuthenticated, isApproved } = useAuth();
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <StatusBar style="dark" backgroundColor="#ac81818c" />
       <NavigationContainer>
-        <DrawerStack />
+        {!isAuthenticated ? (
+          <AuthStack />
+        ) : isApproved ? (
+          <DrawerStack />
+        ) : (
+          <ApprovalStack />
+        )}
       </NavigationContainer>
     </SafeAreaView>
   );
@@ -162,11 +180,13 @@ function Navigation() {
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <LocationContextProvider>
-        <RideContextProvide>
-        <Navigation />
-        </RideContextProvide>
-      </LocationContextProvider>
+      <AuthenticationContextProvider>
+        <LocationContextProvider>
+          <RideContextProvide>
+            <Navigation />
+          </RideContextProvide>
+        </LocationContextProvider>
+      </AuthenticationContextProvider>
     </GestureHandlerRootView>
   );
 }

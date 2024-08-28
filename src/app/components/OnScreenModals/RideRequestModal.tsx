@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import Modal from "react-native-modal";
+import { RideContext } from "../../../store/RideContext";
 
 interface RideRequestModalProps {
   isVisible: boolean;
@@ -17,6 +18,8 @@ export default function RideRequestModal({
   onCancel,
   requestDetails,
 }: RideRequestModalProps) {
+
+
 
   return (
     <Modal

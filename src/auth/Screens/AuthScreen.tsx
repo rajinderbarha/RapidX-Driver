@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import OrangeButton from "../../ui/OrangeButton";
 import { useNavigation } from "@react-navigation/native";
+import { AuthenticationContext } from "../../store/AuthenticationContext";
 // import {} from "../../../util/location";
 // import AuthenticatePhoneNumber from "../../../util/localAPIs";
 // import { LocalAuthContext } from "../../store/LocalAuthContext";
@@ -24,6 +25,8 @@ export default function AuthScreen() {
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [otp, setOtp] = useState("");
   const navigation = useNavigation<any>();
+  const {setIsAuthenticated} = useContext(AuthenticationContext)
+
   // const {confirm,confirmOtp,signInWithPhoneNumber,signOut,user} =useContext(AuthContext)
   // const { setToken, token } = useContext(LocalAuthContext);
   // const { setPhNumber, setName } = useContext(ProfileContext);
@@ -133,7 +136,7 @@ export default function AuthScreen() {
           )} */}
         </View>
       </ScrollView>
-      <OrangeButton iconName={''} text={"Send"} onPress={()=>navigation.navigate('NewUser')} />
+      <OrangeButton text={"Send"} onPress={()=>setIsAuthenticated(true)} />
 
       {/* {!confirm && !user &&(
         <OrangeButton text={"Send"} onPress={handelSignIn} />

@@ -1,106 +1,135 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { AirbnbRating, Avatar, Icon } from "@rneui/base";
+import React, { useContext, useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, Image, TextInput } from "react-native";
 import Modal from "react-native-modal";
+import { colors } from "../../../../constants/colors";
+import OrangeButton from "../../../ui/OrangeButton";
+import { RideContext } from "../../../store/RideContext";
 
 interface RideRequestModalProps {
   isVisible: boolean;
-  onConfirm: () => void;
-  onCancel: () => void;
-  requestDetails: {
-    name: string;
-  };
+  // onConfirm: () => void;
+  // onCancel: () => void;
+  // requestDetails: {
+  //   name: string;
+  // };
 }
 
-export default function RatingModal({
-  isVisible,
-  onConfirm,
-  onCancel,
-  requestDetails,
-}: RideRequestModalProps) {
-
+export default function RatingModal({ isVisible }: RideRequestModalProps) {
+const driver = {
+  rating : 5,
+  name : 'vv'
+}
+const {reset} = useContext(RideContext)
   return (
     <Modal
       isVisible={isVisible}
       animationIn="slideInUp"
       animationOut="slideOutDown"
-      
     >
-      <View style={styles.modalContent}>
-        <Image
-          source={require("../../../../assets/data/undraw.png")}
-          style={styles.image}
-        />
-        <Text style={styles.confirmText}>Confirm?</Text>
-        <Text style={styles.requestText}>
-          You got a ride request from {requestDetails.name}.{"\n"}Please pick
-          him up from his request location.
-          {"\n"}Please go quick.
-        </Text>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
-            <Text style={styles.cancelButtonText}>✘</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
-            <Text style={styles.confirmButtonText}>Confirm Request ➔</Text>
-          </TouchableOpacity>
+      {/* <View style={styles.root}> */}
+       <View style={styles.container}>
+      
+        <View style={styles.ratingContainer}>
+          <Text style={styles.questionText}>How was your Trip?</Text>
+          <AirbnbRating
+            count={5}
+            defaultRating={0}
+            size={30}
+            showRating={false}
+            selectedColor="yellow"
+            starContainerStyle={styles.ratingInput}
+          />
         </View>
+        <TextInput
+          style={styles.commentInput}
+          placeholder="Comment"
+          multiline
+        />
+
+        <OrangeButton
+          text="Send"
+          onPress={() => reset()}
+        />
       </View>
+      {/* </View> */}
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  modalContent: {
-    backgroundColor: "white",
-    borderRadius: 10,
+  root:{
+    // flex : 1,
+    // backgroundColor : 'white',
+    // alignItems : 'center',
+    // justifyContent : 'center'
+  },
+  container: {
+    // flex: 1,
     padding: 20,
+    // backgroundColor : 'red',
+    width: "100%",
+    // backgroundColor : 'white',
+    justifyContent : 'space-between',
+    gap : 10
+  },
+  driverInfo: {
     alignItems: "center",
-  },
-  image: {
-    width: 287,
-    height: 213,
     marginBottom: 20,
+    backgroundColor: colors.primary,
+    width: "100%",
+    paddingBottom: 20,
   },
-  confirmText: {
-    fontSize: 24,
+  driverImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 5,
+  },
+  ratingContainer: {
+    backgroundColor: "black",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+    marginHorizontal: 20,
+    borderRadius: 15,
+  },
+  driverName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  rating: {
+    marginTop: 5,
+  },
+  questionText: {
+    fontSize: 16,
     fontWeight: "bold",
     marginBottom: 10,
+    color: "#fff",
   },
-  requestText: {
-    fontSize: 16,
-    textAlign: "center",
+  ratingInput: {
     marginBottom: 20,
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    width: "100%",
+  commentInput: {
+    backgroundColor: "#fff",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 20,
+    fontSize: 16,
+    marginHorizontal: 20,
+    color: "black",
+    height: 80,
   },
-  cancelButton: {
-    backgroundColor: "red",
-    borderRadius: 40,
-    // paddingVertical: 10,
-    // paddingHorizontal: 20,
-    height : 50,
-    width : 50,
-    alignItems : 'center',
-    justifyContent : 'center',
-    marginRight : 20
+  sendButton: {
+    backgroundColor: "#FF4500",
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
   },
-  cancelButtonText: {
-      color: "white",
-      fontSize: 20,
-  },
-  confirmButton: {
-    backgroundColor: "green",
-    borderRadius: 30,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    alignItems : 'center',
-    justifyContent : 'center',
-  },
-  confirmButtonText: {
-    color: "white",
-    fontSize: 18,
+  sendButtonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#fff",
   },
 });

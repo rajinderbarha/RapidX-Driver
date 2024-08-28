@@ -13,10 +13,11 @@ import { colors } from "../../../constants/colors";
 import OrangeButton from "../../ui/OrangeButton";
 import { useNavigation } from "@react-navigation/native";
 import { RideContext } from "../../store/RideContext";
+import getShortAddress from "../../../util/getShortAddress";
 
 const CurrentRideDetailsScreen = () => {
   const navigation = useNavigation<any>()
-  const {setReachedPickupLocation, nearPickupLocation} = useContext(RideContext)
+  const {setReachedPickupLocation, nearPickupLocation, riderDetails} = useContext(RideContext)
 
 
   function reachedPickupPointHandler(){
@@ -28,6 +29,9 @@ const CurrentRideDetailsScreen = () => {
     setReachedPickupLocation(true)
   };
   
+  
+  const pickupAddress = getShortAddress(riderDetails?.pickupAddress)
+  const dropAddress = getShortAddress(riderDetails?.dropAddress)
 
 
   return (
@@ -92,7 +96,7 @@ const CurrentRideDetailsScreen = () => {
           />
           <View>
             <Text style={styles.arrivalText}>Your passanger is waiting </Text>
-            <Text style={styles.subText}>Douglas Crescent Road</Text>
+            <Text style={styles.subText}>{pickupAddress.primary}</Text>
           </View>
           <TouchableOpacity style={styles.callButton}>
             <Icon name="phone" type="font-awesome" color="green" size={20} />
@@ -105,15 +109,15 @@ const CurrentRideDetailsScreen = () => {
           <View style={styles.routePoint}>
             <Icon name="circle" type="font-awesome" color="green" size={12} />
             <View style={styles.routeDetails}>
-              <Text style={styles.routeText}>Douglas Crescent Road</Text>
-              <Text style={styles.subText}>Venie</Text>
+              <Text style={styles.routeText}>{pickupAddress.primary}</Text>
+              <Text style={styles.subText}>{pickupAddress.secondary}</Text>
             </View>
           </View>
           <View style={styles.routePoint}>
             <Icon name="circle" type="font-awesome" color="orange" size={12} />
             <View style={styles.routeDetails}>
-              <Text style={styles.routeText}>Logan Avenue</Text>
-              <Text style={styles.subText}>Aura</Text>
+              <Text style={styles.routeText}>{dropAddress.primary}</Text>
+              <Text style={styles.subText}>{dropAddress.secondary}</Text>
             </View>
           </View>
         </View>

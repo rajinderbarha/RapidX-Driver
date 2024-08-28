@@ -26,13 +26,13 @@ export default function Map({ reff, markerType }: MapProps) {
       if (riderDetails) {
         if (reachedPickupLocation) {
           return {
-            latitude: riderDetails.dropLocation.latitude,
-            longitude: riderDetails.dropLocation.longitude,
+            latitude: riderDetails.user_destination.latitude,
+            longitude: riderDetails.user_destination.longitude,
           };
         } else {
           return {
-            latitude: riderDetails.pickupLocation.latitude,
-            longitude: riderDetails.pickupLocation.longitude,
+            latitude: riderDetails.user_origin.latitude,
+            longitude: riderDetails.user_origin.longitude,
           };
         }
       }
@@ -60,8 +60,8 @@ const destination = currentDestination()
         <AddMarker
           color={"#1979e7"}
           location={{
-            latitude: riderDetails.pickupLocation.latitude,
-            longitude: riderDetails.pickupLocation.longitude,
+            latitude: riderDetails.user_origin.latitude,
+            longitude: riderDetails.user_origin.longitude,
           }}
           image={
             <GifImage
@@ -76,8 +76,8 @@ const destination = currentDestination()
         <AddMarker
           color={"red"}
           location={{
-            latitude: riderDetails.dropLocation.latitude,
-            longitude: riderDetails.dropLocation.longitude,
+            latitude: riderDetails.user_destination.latitude,
+            longitude: riderDetails.user_destination.longitude,
           }}
           image={
             <GifImage

@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import IconButton from "../../../ui/IconButton";
 import { useNavigation } from "@react-navigation/native";
+import { RideContext } from "../../../store/RideContext";
 
 
 export default function MainHeader() {
 
   const navigation = useNavigation<any>()
+  const {setIncomingRide} = useContext(RideContext)
 
   return (
     <View style={styles.root}>
@@ -41,7 +43,7 @@ export default function MainHeader() {
             name="heart-outline"
             color="grey"
             size={24}
-            onPress={() => console.log("Favourite pressed")}
+            onPress={() => setIncomingRide(true)}
           />
         </View>
       </Pressable>

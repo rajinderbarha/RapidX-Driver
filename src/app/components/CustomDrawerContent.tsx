@@ -5,6 +5,7 @@ import { Avatar, Icon, Text } from '@rneui/base';
 import { colors } from '../../../constants/colors';
 import LogoutModal from './OnScreenModals/LogoutModal';
 import { useNavigation } from '@react-navigation/native';
+import { AuthStack } from '../../../App';
 
 export default function CustomDrawerContent(props : DrawerContentComponentProps) {
 
@@ -17,6 +18,7 @@ export default function CustomDrawerContent(props : DrawerContentComponentProps)
   }
 
   const handleSignOut = async () => {
+ 
     // try {
     //   // await signOut();
     //   await logout();
