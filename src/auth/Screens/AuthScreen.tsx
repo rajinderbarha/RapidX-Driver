@@ -14,25 +14,30 @@ import {
 import OrangeButton from "../../ui/OrangeButton";
 import { useNavigation } from "@react-navigation/native";
 import { AuthenticationContext } from "../../store/AuthenticationContext";
+import AuthenticatePhoneNumber from "../../../util/localAPIs";
+import { ProfileContext } from "../../store/ProfileContext";
+import { LocalAuthContext } from "../../store/LocalAuthContext";
+import storeUserProfileData from "../../../util/driverData";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // import {} from "../../../util/location";
 // import AuthenticatePhoneNumber from "../../../util/localAPIs";
-// import { LocalAuthContext } from "../../store/LocalAuthContext";
 // import { ProfileContext } from "../../store/ProfileContext";
 
 export default function AuthScreen() {
   const [countryCode, setCountryCode] = useState<string>("+91");
   const [phoneNumberInput, setPhoneNumberInput] = useState<string>("");
-  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [phNumber, setPhNumber] = useState<string>("");
   const [otp, setOtp] = useState("");
   const navigation = useNavigation<any>();
   const {setIsAuthenticated} = useContext(AuthenticationContext)
+  const {setIsNewUser, setIsProfileCompleted} = useContext(ProfileContext)
 
   // const {confirm,confirmOtp,signInWithPhoneNumber,signOut,user} =useContext(AuthContext)
-  // const { setToken, token } = useContext(LocalAuthContext);
+  const { setToken, token } = useContext(LocalAuthContext);
   // const { setPhNumber, setName } = useContext(ProfileContext);
 
   useEffect(() => {
-    setPhoneNumber(`${countryCode}${phoneNumberInput}`);
+    setPhNumber(`${countryCode}${phoneNumberInput}`);
   }, [countryCode, phoneNumberInput]);
 
   function validatePhoneNumber(countryCode: string, phoneNumber: string) {
@@ -59,18 +64,26 @@ export default function AuthScreen() {
   }
 
   async function handelSignIn() {
-    // if (validatePhoneNumber(countryCode, phoneNumberInput)) {
-    //   try {
-    //     const userData = await AuthenticatePhoneNumber(phoneNumber);
-    //     const receivedToken = userData.token;
-    //     setToken(receivedToken);
-    //     setPhNumber(phoneNumber);
-    //     setName(userData.name)
-    //     Alert.alert("Logging You In");
-    //   } catch (error) {
-    //     console.error("Error signing in", error);
-    //   }
-    // }
+    if (validatePhoneNumber(countryCode, phoneNumberInput)) {
+      try {
+        const responseData = await AuthenticatePhoneNumber(phNumber, setIsNewUser, setIsProfileCompleted);
+        await AsyncStorage.setItem('phoneNumber', phNumber).then(()=>console.log('stored phone Number'))
+        // await storeUserProfileData({
+        //   firstName: responseData.driver.first_Name,
+        //   lastName: responseData.driver.last_Name,
+        //   email: responseData.driver.email,
+        //   phoneNumber: phNumber,
+        // }).then(()=>console.log('stored async data'))
+        const receivedToken = responseData.token;
+        setToken(receivedToken);
+       
+        // setPhNumber(phoneNumber);
+        // setName(userData.name)
+        Alert.alert("Logging You In");
+      } catch (error) {
+        console.error("Error signing in", error);
+      }
+    }
   }
 
   // const handleConfirmOtp = async () => {
@@ -136,7 +149,7 @@ export default function AuthScreen() {
           )} */}
         </View>
       </ScrollView>
-      <OrangeButton text={"Send"} onPress={()=>setIsAuthenticated(true)} />
+      <OrangeButton text={"Send"} onPress={handelSignIn} />
 
       {/* {!confirm && !user &&(
         <OrangeButton text={"Send"} onPress={handelSignIn} />

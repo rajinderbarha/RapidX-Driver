@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,25 +6,80 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import CheckBox from "react-native-check-box";
 import OrangeButton from "../../ui/OrangeButton";
 import { useAuth } from "../../store/AuthenticationContext";
 import { useNavigation } from "@react-navigation/native";
+import { ProfileContext } from "../../store/ProfileContext";
+import { UpdateDriver } from "../../../util/localAPIs";
+import { Alert } from "react-native";
+import storeUserProfileData from "../../../util/driverData";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import LoadingCircle from "../../app/components/OnScreenModals/LoadingCircle";
+import { colors } from "../../../constants/colors";
+import LoadingCircleComponent from "../../app/components/OnScreenModals/LoadingCircle";
 
 export default function NewUserProfileScreen() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isChecked, setIsChecked] = useState(false);
   const navigation = useNavigation<any>();
   const { setIsAuthenticated, setIsApproved } = useAuth();
+  const {
+    setIsProfileCompleted,
+    firstName,
+    setFirstName,
+    lastName,
+    setLastName,
+    email,
+    setEmail,
+    phoneNumber,
+    setPicture,
+    picture
+  } = useContext(ProfileContext);
+const [loading, setLoading] = useState(false);
+
+  const handleUpdate = async () => {
+    const updatedProfile = {
+      phoneNumber,
+      firstName,
+      lastName,
+      email,
+    };
+    if (firstName && lastName && phoneNumber) {
+      setLoading(true)
+      await UpdateDriver(updatedProfile);
+      await storeUserProfileData({phoneNumber, firstName, lastName ,email}).then(()=>setLoading(false))
+      navigation.navigate("UpdateDetails");
+    }else{
+      Alert.alert('Complete your profile first')
+    }
+  };
+
+  useEffect(() => {
+    async function fetchProfileData() {
+      try {
+        const profileData = await AsyncStorage.getItem('profileData');
+        if (profileData) {
+          const parsedProfileData = JSON.parse(profileData);
+          setEmail(parsedProfileData.email);
+          setFirstName(parsedProfileData.firstName);
+          setLastName(parsedProfileData.lastName);
+        }
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      }
+    }
+
+    fetchProfileData();
+    // dependencies - setEmail, setFirstName, setLastName, setPhoneNumber
+  }, []);
+
 
   return (
     <View style={styles.container}>
+      <LoadingCircleComponent  color={colors.primary} isVisible={loading}  text="updating"/>
       <View>
         <Text style={styles.title}>REGISTER</Text>
         <Image
@@ -52,14 +107,13 @@ export default function NewUserProfileScreen() {
           />
           <Icon name="person-outline" size={20} style={styles.icon} />
         </View>
-
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
             placeholder="+91"
             value={phoneNumber}
-            onChangeText={setPhoneNumber}
             keyboardType="phone-pad"
+            editable = {false}
           />
           <Icon
             name="checkmark-circle"
@@ -109,7 +163,8 @@ export default function NewUserProfileScreen() {
         <OrangeButton
           text="Next"
           onPress={() => {
-            navigation.navigate('UpdateDetails')
+            handleUpdate()
+            // navigation.navigate('UpdateDetails')
             // setIsApproved(true);
           }}
         />
@@ -155,6 +210,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     paddingVertical: 10,
+    color : 'black'
   },
   icon: {
     marginLeft: 10,

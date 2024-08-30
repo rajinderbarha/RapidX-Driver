@@ -7,6 +7,7 @@ import OrangeButton from "../../../ui/OrangeButton";
 import { RideContext } from "../../../store/RideContext";
 import { LocationContext } from "../../../store/LocationContext";
 import { colors } from "../../../../constants/colors";
+import getShortAddress from "../../../../util/getShortAddress";
 
 interface iconProps {
   name: string;
@@ -17,7 +18,8 @@ const OnFinishedRideModal = ({ onChange, isFocused }: any) => {
   const navigation = useNavigation<any>();
 
   // const { pickupAddress, dropAddress, fare } = useContext(LocationContext);
-  const { setReachedPickupLocation } = useContext(RideContext);
+  const { setReachedPickupLocation, riderDetails, setIsRideFinished } =
+    useContext(RideContext);
 
   const snapPoints = ["10%", "30%"];
 
@@ -25,6 +27,11 @@ const OnFinishedRideModal = ({ onChange, isFocused }: any) => {
     { name: "Douglas Crescent Road", sub: "Venie" },
     { name: "Logan Avenue", sub: "Aura" },
   ];
+
+  const pickupAddress = getShortAddress(riderDetails?.pickupAddress);
+  const dropAddress = getShortAddress(riderDetails?.dropAddress);
+
+
 
   const fare = 0;
 
@@ -76,27 +83,37 @@ const OnFinishedRideModal = ({ onChange, isFocused }: any) => {
         <View style={styles.routeInfo}>
           <View style={styles.routeDetails}>
             <AddIcon name="pin" type="ionicon" />
-            <Text style={styles.routeText}>Helden St</Text>
+            <Text style={styles.routeText}>
+              {pickupAddress.primary}
+            </Text>
             <AddIcon name="direction" type="entypo" />
 
-            <Text style={styles.routeText}>Charlotte St</Text>
+            <Text style={styles.routeText}>
+              {dropAddress.primary}
+            </Text>
           </View>
           <View style={styles.rideDetails}>
-            <View style={{flexDirection : 'row'}}>
-            <AddIcon name="location" type="entypo" />
-              <Text style={styles.detailText}>34 Km</Text>
+            <View style={{ flexDirection: "row" }}>
+              <AddIcon name="location" type="entypo" />
+              <Text style={styles.detailText}>{riderDetails?.distance} Km</Text>
             </View>
-            <View style={{flexDirection : 'row'}}>
-            <AddIcon name="time" type="ionicon" />
-              <Text style={styles.detailText}>1h 30m</Text>
+            <View style={{ flexDirection: "row" }}>
+              <AddIcon name="time" type="ionicon" />
+              <Text style={styles.detailText}>{riderDetails?.duration}</Text>
             </View>
-            <View style={{flexDirection : 'row'}}>
-            <AddIcon name="hand-coin" type="material-community" />
+            <View style={{ flexDirection: "row" }}>
+              <AddIcon name="hand-coin" type="material-community" />
               <Text style={styles.detailText}>$45.20</Text>
             </View>
           </View>
         </View>
-        <OrangeButton text="Finished Ride" onPress={() => {}} style={{height : 52}}/>
+        <OrangeButton
+          text="Finished Ride"
+          onPress={() => {
+            setIsRideFinished(true);
+          }}
+          style={{ height: 52 }}
+        />
       </View>
     </CustomBottomModal>
   );
@@ -113,7 +130,7 @@ const styles = StyleSheet.create({
   routeInfo: {
     flex: 0.7,
     flexDirection: "column",
-    padding: 15
+    padding: 15,
     // backgroundColor: "yellow",
     // marginTop : 10
     // justifyContent: 'center',
@@ -124,7 +141,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     // alignItems : 'center',
-    justifyContent : 'center',
+    justifyContent: "center",
     // gap : 10
   },
   iconContainer: {
@@ -133,19 +150,17 @@ const styles = StyleSheet.create({
   routeText: {
     fontSize: 16,
     fontWeight: "bold",
-    marginRight : 10
+    marginRight: 10,
   },
   rideDetails: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent : 'space-around'
-    
+    justifyContent: "space-around",
   },
   detailText: {
     fontSize: 18,
     marginBottom: 5,
   },
-
 });
 
 export default OnFinishedRideModal;

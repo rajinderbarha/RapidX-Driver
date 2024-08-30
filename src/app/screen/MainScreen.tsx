@@ -75,7 +75,7 @@ export default function MainScreen() {
               isFocused={isFocused}
             />
           )}
-          {isRideFinished && <RatingModal isVisible={true} />}
+       <RatingModal isVisible={isRideFinished} />
         </View>
         <MyLocationButton
           onPress={myLocationButtonHandler}

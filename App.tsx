@@ -18,7 +18,7 @@ import LegalAndTermsScreen from "./src/app/screen/DrawerScreens/LegalAndTerms";
 import ContactUsScreen from "./src/app/screen/DrawerScreens/ContactUs";
 import ProfileScreen from "./src/app/screen/DrawerScreens/Profile";
 import LocationContextProvider from "./src/store/LocationContext";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import RideRequestModal from "./src/app/components/OnScreenModals/RideRequestModal";
 import RideContextProvide, { RideContext } from "./src/store/RideContext";
 import RideCancelScreen from "./src/app/screen/RideCancelScreen";
@@ -27,6 +27,14 @@ import AuthenticationContextProvider, {
   useAuth,
 } from "./src/store/AuthenticationContext";
 import UpdateDetailsScreen from "./src/auth/Screens/Updatedetails";
+import ProfileContextProvider, {
+  ProfileContext,
+} from "./src/store/ProfileContext";
+import LocalAuthProvider, {
+  LocalAuthContext,
+} from "./src/store/LocalAuthContext";
+import { fetchToken } from "./util/localAPIs";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -60,6 +68,42 @@ export function AuthStack() {
 }
 
 function ApprovalStack() {
+  const { setPhoneNumber, setEmail, setFirstName, setLastName } =
+    useContext(ProfileContext);
+
+  useEffect(() => {
+    async function fetchProfileData() {
+      try {
+        await AsyncStorage.getItem("phoneNumber").then((phoneNumber) => {
+          console.log(phoneNumber);
+          if (phoneNumber) {
+            setPhoneNumber(phoneNumber);
+            console.log("setPhoneAsync");
+          } else {
+            console.log("no Phone found");
+          }
+        });
+
+        // const profileData = await AsyncStorage.getItem('profileData');
+        // console.log('profileData', profileData)
+        // if (profileData) {
+        //   const parsedProfileData = JSON.parse(profileData);
+        //   console.log(parsedProfileData)
+        //   setEmail(parsedProfileData.email);
+        //   setFirstName(parsedProfileData.firstName);
+        //   setLastName(parsedProfileData.lastName);
+        //   setPhoneNumber(parsedProfileData.phoneNumber);
+        //   console.log('got Profile async')
+        // }
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      }
+    }
+
+    fetchProfileData();
+    // dependencies - setEmail, setFirstName, setLastName, setPhoneNumber
+  }, []);
+
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -161,13 +205,26 @@ function DrawerStack() {
 
 function Navigation() {
   const { isAuthenticated, isApproved } = useAuth();
+  const { token, setToken } = useContext(LocalAuthContext);
+  const { isProfileCompleted } = useContext(ProfileContext);
+
+  useEffect(() => {
+    async function fetchingToken() {
+      const storedToken = await fetchToken();
+      if (storedToken) {
+        setToken(storedToken);
+      }
+    }
+    fetchingToken();
+  }, [token]);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <StatusBar style="dark" backgroundColor="#ac81818c" />
       <NavigationContainer>
-        {!isAuthenticated ? (
+        {!token ? (
           <AuthStack />
-        ) : isApproved ? (
+        ) : isProfileCompleted ? (
           <DrawerStack />
         ) : (
           <ApprovalStack />
@@ -181,11 +238,15 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthenticationContextProvider>
-        <LocationContextProvider>
-          <RideContextProvide>
-            <Navigation />
-          </RideContextProvide>
-        </LocationContextProvider>
+        <LocalAuthProvider>
+          <ProfileContextProvider>
+            <LocationContextProvider>
+              <RideContextProvide>
+                <Navigation />
+              </RideContextProvide>
+            </LocationContextProvider>
+          </ProfileContextProvider>
+        </LocalAuthProvider>
       </AuthenticationContextProvider>
     </GestureHandlerRootView>
   );

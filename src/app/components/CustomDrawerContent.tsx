@@ -6,12 +6,14 @@ import { colors } from '../../../constants/colors';
 import LogoutModal from './OnScreenModals/LogoutModal';
 import { useNavigation } from '@react-navigation/native';
 import { AuthStack } from '../../../App';
+import { logout } from '../../../util/localAPIs';
+import { LocalAuthContext } from '../../store/LocalAuthContext';
 
 export default function CustomDrawerContent(props : DrawerContentComponentProps) {
 
   const [isAlertVisible, setAlertVisible] = useState(false);
   const navigation = useNavigation<any>()
-  // const { setToken } = useContext(LocalAuthContext);
+  const { setToken } = useContext(LocalAuthContext);
 
   function toggleAlert() {
     setAlertVisible(!isAlertVisible);
@@ -19,15 +21,15 @@ export default function CustomDrawerContent(props : DrawerContentComponentProps)
 
   const handleSignOut = async () => {
  
-    // try {
-    //   // await signOut();
-    //   await logout();
-    //   setToken("");
+    try {
+      // await signOut();
+      await logout();
+      setToken("");
 
-    //   Alert.alert("Signed out successfully");
-    // } catch (error) {
-    //   console.error("Error signing out", error);
-    // }
+      Alert.alert("Signed out successfully");
+    } catch (error) {
+      console.error("Error signing out", error);
+    }
   };
 
 
