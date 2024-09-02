@@ -24,6 +24,7 @@ export default async function AuthenticatePhoneNumber(
       const responseData = response.data;
       const driverData = response.data.driver;
       const receivedToken = response.data.token;
+      const driverId = driverData._id
       const isNewUser = driverData?.is_new_user;
 
       if (isNewUser) {
@@ -35,14 +36,16 @@ export default async function AuthenticatePhoneNumber(
 
       console.log("Response data:", response.data);
 
-      if (receivedToken) {
+      if (receivedToken && driverId) {
         await AsyncStorage.setItem("token", receivedToken).then(() =>
           console.log("token added")
         );
-
+        await AsyncStorage.setItem("driverId", driverId).then(() =>
+          console.log("Id added")
+        );
         return responseData;
       } else {
-        console.log("Token not found in the response.");
+        console.log("Token or Id not found in the response.");
       }
     }
   } catch (error) {
@@ -59,6 +62,18 @@ export async function fetchToken() {
     }
   } catch (error) {
     console.log("error fetching token : ", error);
+  }
+}
+
+export async function fetchDriverId() {
+  try {
+    const driverId = await AsyncStorage.getItem("driverId");
+    if (driverId) {
+      console.log("got Id");
+      return driverId;
+    }
+  } catch (error) {
+    console.log("error fetching driverId : ", error);
   }
 }
 
@@ -187,6 +202,7 @@ export async function logout() {
   try {
     await AsyncStorage.removeItem("token");
     await AsyncStorage.removeItem("profileData");
+    await AsyncStorage.removeItem("driverId");
   } catch (error) {
     console.error("Error logging out:", error);
   }

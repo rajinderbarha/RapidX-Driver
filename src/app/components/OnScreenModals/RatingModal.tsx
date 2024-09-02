@@ -49,7 +49,7 @@ const {reset} = useContext(RideContext)
 
         <OrangeButton
           text="Send"
-          onPress={() => reset()}
+          onPress={reset}
         />
       </View>
       {/* </View> */}

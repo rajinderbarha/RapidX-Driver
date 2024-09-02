@@ -160,10 +160,32 @@ function DrawerStack() {
     pickupAddress:
       "PP6C+FHR, Phase 3B-1, Sector 60, Sahibzada Ajit Singh Nagar, Punjab 160059, India",
   };
-
-  const [isVisible, setIsVisible] = useState(true);
+  const { setEmail, setFirstName, setLastName, setPhoneNumber } = useContext(ProfileContext);
   const { setRiderDetails, setRideConfirmed, incomingRide, setIncomingRide } =
-    useContext(RideContext);
+  useContext(RideContext);
+
+  useEffect(() => {
+    async function fetchProfileData() {
+      try {
+        const profileData = await AsyncStorage.getItem('profileData');
+        if (profileData) {
+          const parsedProfileData = JSON.parse(profileData);
+          setEmail(parsedProfileData.email);
+          setFirstName(parsedProfileData.firstName);
+          setLastName(parsedProfileData.lastName);
+          setPhoneNumber(parsedProfileData.phoneNumber);
+        }
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      }
+    }
+
+    fetchProfileData();
+    // dependencies - setEmail, setFirstName, setLastName, setPhoneNumber
+  }, []);
+
+
+ 
 
   const handleConfirm = () => {
     setRiderDetails(rideDetails);
@@ -222,13 +244,15 @@ function Navigation() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <StatusBar style="dark" backgroundColor="#ac81818c" />
       <NavigationContainer>
-        {!token ? (
+      <DrawerStack />
+
+        {/* {!token ? (
           <AuthStack />
         ) : isProfileCompleted ? (
           <DrawerStack />
         ) : (
           <ApprovalStack />
-        )}
+        )} */}
       </NavigationContainer>
     </SafeAreaView>
   );

@@ -103,29 +103,13 @@ export default function RideContextProvide({ children }: PropsWithChildren) {
   const [riderDetails, setRiderDetails] =
     useState<RideContextInterface["riderDetails"]>(null);
 
-  const userData = {
-    userName: "Vishal Sharma",
-    distance: 15,
-    dropAddress:
-      "Teleperformance Mohali, Teleperformance Mohali, A-40, Industrial Area, Sector 75, Sahibzada Ajit Singh Nagar, Punjab 160055, India",
-    duration: 20,
-    pickupAddress:
-      "E-190 , 1st Floor, Phase 8B, Industrial Area, Sector 74, Sahibzada Ajit Singh Nagar, Punjab 140308, India",
-    user_destination: {
-      latitude: 30.705620096640143,
-      longitude: 76.69078666716814,
-    },
-    user_id: "66bc9d0e8f067abcb83e106d",
-    user_origin: { latitude: 30.710368958640302, longitude: 76.6881500557065 },
-  };
 
   function reset() {
-    setRideConfirmed(false);
-    setReachedPickupLocation(null);
-    setRiderDetails(null);
     setCancelRide(null);
-    setNearPickupLocation(null);
+    setRideConfirmed(false);
     setRiderDetails(null);
+    setNearPickupLocation(null);
+    setReachedPickupLocation(null);
     setIsRideFinished(false);
   }
 

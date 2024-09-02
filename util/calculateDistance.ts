@@ -6,7 +6,7 @@ interface Coordinates {
 export default function calculateDistance(point1: Coordinates, point2: Coordinates): number {
     const toRadians = (degree: number): number => degree * Math.PI / 180;
 
-    const R = 6371; // Radius of the Earth in km
+    const R = 6371; 
     const dLat = toRadians(point2.lat - point1.lat);
     const dLon = toRadians(point2.lng - point1.lng);
 
@@ -16,8 +16,7 @@ export default function calculateDistance(point1: Coordinates, point2: Coordinat
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    const distance = R * c; // Distance in km
-
+    const distance = R * c; 
     return distance;
 }
 

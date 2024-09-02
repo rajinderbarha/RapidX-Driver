@@ -18,7 +18,7 @@ const OnFinishedRideModal = ({ onChange, isFocused }: any) => {
   const navigation = useNavigation<any>();
 
   // const { pickupAddress, dropAddress, fare } = useContext(LocationContext);
-  const { setReachedPickupLocation, riderDetails, setIsRideFinished } =
+  const { setReachedPickupLocation, riderDetails, setIsRideFinished, setRideConfirmed, setNearDropLocation } =
     useContext(RideContext);
 
   const snapPoints = ["10%", "30%"];
@@ -32,26 +32,6 @@ const OnFinishedRideModal = ({ onChange, isFocused }: any) => {
   const dropAddress = getShortAddress(riderDetails?.dropAddress);
 
 
-
-  const fare = 0;
-
-  const driver = {
-    _id: "66b9f461091131eca3542607",
-    phone_number: 91869562417,
-    name: "Rajinder Singh",
-    createdAt: "2024-08-12T11:39:13.827Z",
-    updatedAt: "2024-08-12T11:48:46.691Z",
-    __v: 0,
-    email: "sunnygrover463@gmail.com",
-    gender: "male",
-    profile_picture:
-      "https://res.cloudinary.com/dr1b4ezct/image/upload/v1723463325/driver_profile_pictures/azrw5nqox5pmvuzkyhir.jpg",
-    rating: 5,
-    vehicle_image:
-      "https://res.cloudinary.com/dr1b4ezct/image/upload/v1723463326/vehicle_images/umgeyneoslouganaswt2.jpg",
-    vehicle_plate: "PB 65 L 1504",
-    vehicle_type: "bike",
-  };
 
   function AddIcon({ name, type }: iconProps) {
     return (
@@ -111,6 +91,8 @@ const OnFinishedRideModal = ({ onChange, isFocused }: any) => {
           text="Finished Ride"
           onPress={() => {
             setIsRideFinished(true);
+            setRideConfirmed(false);
+            setNearDropLocation(false);
           }}
           style={{ height: 52 }}
         />
