@@ -52,7 +52,7 @@ export default function CustomDrawerContent(
             {picture ? (
             <Avatar
               rounded
-              size="xlarge"
+              size="large"
               source={{ uri: picture }}
               containerStyle={styles.avatar}
             />
@@ -60,7 +60,7 @@ export default function CustomDrawerContent(
           
           ) : (
             <View style={styles.avatarAlt}>
-              <ProfileInitial name={firstName} /> 
+              <ProfileInitial name={firstName ? firstName : '?'} /> 
               
             </View>
           )}
@@ -191,6 +191,11 @@ const styles = StyleSheet.create({
   avatar: {
     marginBottom: 10,
     marginRight: 20,
+    // height : 75,
+    // width : 75,
+    // overflow : 'hidden',
+    // resizeMode : 'contain'
+
   },
   name: {
     fontWeight: "bold",

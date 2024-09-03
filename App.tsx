@@ -128,7 +128,7 @@ function AuthenticatedStack() {
     >
       <Stack.Screen
         name="Main"
-        component={MainScreen}
+        component={DrawerStack}
         options={{ headerShown: false }}
       />
       <Stack.Screen name="Ride Cancel" component={RideCancelScreen} />
@@ -137,6 +137,7 @@ function AuthenticatedStack() {
         component={CurrentRideDetailsScreen}
         options={{ presentation: "modal" }}
       />
+      <Stack.Screen name="Ride Details" component={RideDetailsScreen} />
     </Stack.Navigator>
   );
 }
@@ -211,10 +212,10 @@ function DrawerStack() {
       >
         <Drawer.Screen
           name="Home"
-          component={AuthenticatedStack}
+          component={MainScreen}
           options={{ headerShown: false }}
         />
-        <Drawer.Screen name="RideDetails" component={RideDetailsScreen} />
+        
         <Drawer.Screen name="YourEarnings" component={YourEarningsScreen} />
         <Drawer.Screen name="RideHistory" component={RideHistoryScreen} />
         <Drawer.Screen name="LegalAndTerms" component={LegalAndTermsScreen} />
@@ -244,12 +245,12 @@ function Navigation() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <StatusBar style="dark" backgroundColor="#ac81818c" />
       <NavigationContainer>
-      <DrawerStack />
+      <AuthenticatedStack />
 
         {/* {!token ? (
           <AuthStack />
         ) : isProfileCompleted ? (
-          <DrawerStack />
+          <AuthenticatedStack />
         ) : (
           <ApprovalStack />
         )} */}

@@ -27,3 +27,20 @@ export default function getShortAddress(fullAddress: any) {
     secondary: "",
   };
 }
+
+
+export function separateAddress(fullAddress : string)  {
+  // Example assumption: The full address has a pattern like "Location Address, Area Address"
+  const separator = ','; // Assuming the separator between location and area is a comma
+
+  const parts = fullAddress.split(separator);
+
+  // Trim any extra spaces
+  const primary = parts[0].trim();
+  const secondary = parts.slice(1).join(separator).trim();
+
+  return {
+    primary,
+    secondary
+  };
+}

@@ -100,7 +100,7 @@ export default function ProfileScreen() {
             </Avatar>
           ) : (
             <View style={styles.avatarAlt}>
-              <ProfileInitial name={firstName} /> 
+              <ProfileInitial name={firstName ? firstName : '?'} /> 
               <Avatar.Accessory
                 size={30}
                 onPress={selectProfilePicture}
