@@ -15,6 +15,8 @@ interface ProfileContext {
   setIsProfileCompleted: (value: any) => void;
   picture : string,
   setPicture : (uri : string)=>void
+  driverId : string;
+  setDriverId : (id : string)=>void
 }
 
 export const ProfileContext = createContext<ProfileContext>({
@@ -31,7 +33,9 @@ export const ProfileContext = createContext<ProfileContext>({
   isProfileCompleted: false,
   setIsProfileCompleted: () => {},
   setPicture :()=>{},
-  picture : ''
+  picture : '',
+  driverId : '',
+  setDriverId : ()=>{}
 });
 
 export default function ProfileContextProvider({
@@ -44,6 +48,8 @@ export default function ProfileContextProvider({
   const [isNewUser, setIsNewUser] = useState(false);
   const [isProfileCompleted, setIsProfileCompleted] = useState(false);
   const [picture, setPicture] = useState('');
+  const [driverId, setDriverId] = useState('');
+  
 
   const value = {
     firstName,
@@ -59,7 +65,9 @@ export default function ProfileContextProvider({
     email,
     setEmail,
     picture,
-    setPicture
+    setPicture,
+    driverId,
+    setDriverId
   };
 
   return (

@@ -7,19 +7,17 @@ interface RideRequestModalProps {
   isVisible: boolean;
   onConfirm: () => void;
   onCancel: () => void;
-  requestDetails: {
-    name: string;
-  };
+
 }
 
 export default function RideRequestModal({
   isVisible,
   onConfirm,
   onCancel,
-  requestDetails,
+
 }: RideRequestModalProps) {
 
-
+const {riderDetails} = useContext(RideContext)
 
   return (
     <Modal
@@ -35,7 +33,7 @@ export default function RideRequestModal({
         />
         <Text style={styles.confirmText}>Confirm?</Text>
         <Text style={styles.requestText}>
-          You got a ride request from {requestDetails.name}.{"\n"}Please pick
+          You got a ride request from {riderDetails?.userName}.{"\n"}Please pick
           him up from his request location.
           {"\n"}Please go quick.
         </Text>

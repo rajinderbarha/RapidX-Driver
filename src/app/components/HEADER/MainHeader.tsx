@@ -4,12 +4,28 @@ import { Ionicons } from "@expo/vector-icons";
 import IconButton from "../../../ui/IconButton";
 import { useNavigation } from "@react-navigation/native";
 import { RideContext } from "../../../store/RideContext";
+import * as Notification from "expo-notifications"
 
 
 export default function MainHeader() {
 
   const navigation = useNavigation<any>()
   const {setIncomingRide} = useContext(RideContext)
+
+  
+  async function sendNotification(){
+    await Notification.scheduleNotificationAsync({
+      content : {
+        title : 'notification',
+        body : 'hi'
+      },
+      trigger : {
+        seconds : 1
+      }
+    })
+    console.log('notification sent')
+  }
+
 
   return (
     <View style={styles.root}>
@@ -43,7 +59,7 @@ export default function MainHeader() {
             name="heart-outline"
             color="grey"
             size={24}
-            onPress={() => setIncomingRide(true)}
+            onPress={() => {setIncomingRide(true); sendNotification()}}
           />
         </View>
       </Pressable>

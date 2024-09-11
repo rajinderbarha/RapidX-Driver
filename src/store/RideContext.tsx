@@ -48,7 +48,7 @@ interface RideContextInterface {
       latitude: number;
       longitude: number;
     };
-    user_id: string;
+    ride_id: string;
     user_origin: {
       latitude: number;
       longitude: number;
@@ -64,7 +64,7 @@ interface RideContextInterface {
       latitude: number;
       longitude: number;
     };
-    user_id: string;
+   ride_id: string;
     user_origin: {
       latitude: number;
       longitude: number;

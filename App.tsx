@@ -17,7 +17,7 @@ import RideHistoryScreen from "./src/app/screen/DrawerScreens/RideHistory";
 import LegalAndTermsScreen from "./src/app/screen/DrawerScreens/LegalAndTerms";
 import ContactUsScreen from "./src/app/screen/DrawerScreens/ContactUs";
 import ProfileScreen from "./src/app/screen/DrawerScreens/Profile";
-import LocationContextProvider from "./src/store/LocationContext";
+import LocationContextProvider, { LocationContext } from "./src/store/LocationContext";
 import { useContext, useEffect, useState } from "react";
 import RideRequestModal from "./src/app/components/OnScreenModals/RideRequestModal";
 import RideContextProvide, { RideContext } from "./src/store/RideContext";
@@ -33,11 +33,21 @@ import ProfileContextProvider, {
 import LocalAuthProvider, {
   LocalAuthContext,
 } from "./src/store/LocalAuthContext";
-import { fetchToken } from "./util/localAPIs";
+import { fetchDriverId, fetchToken } from "./util/localAPIs";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Notifications from "expo-notifications";
+import socket from "./util/socket";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowAlert: true,
+  }),
+});
 
 export function AuthStack() {
   return (
@@ -84,17 +94,17 @@ function ApprovalStack() {
           }
         });
 
-        // const profileData = await AsyncStorage.getItem('profileData');
-        // console.log('profileData', profileData)
-        // if (profileData) {
-        //   const parsedProfileData = JSON.parse(profileData);
-        //   console.log(parsedProfileData)
-        //   setEmail(parsedProfileData.email);
-        //   setFirstName(parsedProfileData.firstName);
-        //   setLastName(parsedProfileData.lastName);
-        //   setPhoneNumber(parsedProfileData.phoneNumber);
-        //   console.log('got Profile async')
-        // }
+        const profileData = await AsyncStorage.getItem("profileData");
+        console.log("profileData", profileData);
+        if (profileData) {
+          const parsedProfileData = JSON.parse(profileData);
+          console.log(parsedProfileData);
+          setEmail(parsedProfileData.email);
+          setFirstName(parsedProfileData.firstName);
+          setLastName(parsedProfileData.lastName);
+          setPhoneNumber(parsedProfileData.phoneNumber);
+          console.log("got Profile async");
+        }
       } catch (error) {
         console.error("Error fetching profile data:", error);
       }
@@ -120,55 +130,17 @@ function ApprovalStack() {
   );
 }
 
-function AuthenticatedStack() {
-  return (
-    <Stack.Navigator
-      initialRouteName="Main"
-      screenOptions={{ cardStyle: { backgroundColor: "#ffffff" } }}
-    >
-      <Stack.Screen
-        name="Main"
-        component={DrawerStack}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen name="Ride Cancel" component={RideCancelScreen} />
-      <Stack.Screen
-        name="Current Ride Details"
-        component={CurrentRideDetailsScreen}
-        options={{ presentation: "modal" }}
-      />
-      <Stack.Screen name="Ride Details" component={RideDetailsScreen} />
-    </Stack.Navigator>
-  );
-}
-
-function DrawerStack() {
-  const rideDetails = {
-    userName: "Vishal",
-    user_origin: {
-      longitude: 76.7793878,
-      latitude: 30.7333196,
-    },
-    user_destination: {
-      longitude: 76.7906,
-      latitude: 30.7049,
-    },
-    user_id: "66b1c305d27b9a0a022c6005",
-    distance: 10,
-    duration: 8,
-    dropAddress:
-      "MPR8+QCJ, Himalaya Marg, Sector 69, Sahibzada Ajit Singh Nagar, Punjab 140308, India",
-    pickupAddress:
-      "PP6C+FHR, Phase 3B-1, Sector 60, Sahibzada Ajit Singh Nagar, Punjab 160059, India",
-  };
-  const { setEmail, setFirstName, setLastName, setPhoneNumber } = useContext(ProfileContext);
-  const { setRiderDetails, setRideConfirmed, incomingRide, setIncomingRide } =
-  useContext(RideContext);
+ function AuthenticatedStack() {
+  const { setEmail, setFirstName, setLastName, setPhoneNumber, driverId } =
+    useContext(ProfileContext);
+  const { riderDetails, setRideConfirmed, incomingRide, setIncomingRide } =
+    useContext(RideContext);
+    const {location} = useContext(LocationContext)
 
   useEffect(() => {
     async function fetchProfileData() {
       try {
-        const profileData = await AsyncStorage.getItem('profileData');
+        const profileData = await AsyncStorage.getItem("profileData");
         if (profileData) {
           const parsedProfileData = JSON.parse(profileData);
           setEmail(parsedProfileData.email);
@@ -185,18 +157,28 @@ function DrawerStack() {
     // dependencies - setEmail, setFirstName, setLastName, setPhoneNumber
   }, []);
 
-
- 
-
   const handleConfirm = () => {
-    setRiderDetails(rideDetails);
     setRideConfirmed(true);
     setIncomingRide(false);
+    socket.emit('ride-accept', {
+      driverId: driverId,
+      rideId: riderDetails?.ride_id,
+      location : {
+        longitude : location?.coords.longitude,
+        latitude : location?.coords.latitude
+      }
+    })
+    console.log('Ride accepted by driver with id:', driverId);
   };
 
   const handleCancel = () => {
     setIncomingRide(false);
     // Handle ride cancellation logic here
+    socket.emit('cancel-ride', {
+      rideId: riderDetails?.ride_id,
+      cancelled_by: 'driver',  // Change this depending on who cancels
+  });
+  console.log(`Cancel ride event emitted for ride ID: ${riderDetails?.ride_id}`);
   };
 
   return (
@@ -205,8 +187,31 @@ function DrawerStack() {
         isVisible={incomingRide}
         onConfirm={handleConfirm}
         onCancel={handleCancel}
-        requestDetails={{ name: "vishal" }}
       />
+      <Stack.Navigator
+        initialRouteName="Main"
+        screenOptions={{ cardStyle: { backgroundColor: "#ffffff" } }}
+      >
+        <Stack.Screen
+          name="Main"
+          component={DrawerStack}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="Ride Cancel" component={RideCancelScreen} />
+        <Stack.Screen
+          name="Current Ride Details"
+          component={CurrentRideDetailsScreen}
+          options={{ presentation: "modal" }}
+        />
+        <Stack.Screen name="Ride Details" component={RideDetailsScreen} />
+      </Stack.Navigator>
+    </>
+  );
+}
+
+function DrawerStack() {
+  return (
+    <>
       <Drawer.Navigator
         drawerContent={(props) => <CustomDrawerContent {...props} />}
       >
@@ -215,7 +220,7 @@ function DrawerStack() {
           component={MainScreen}
           options={{ headerShown: false }}
         />
-        
+
         <Drawer.Screen name="YourEarnings" component={YourEarningsScreen} />
         <Drawer.Screen name="RideHistory" component={RideHistoryScreen} />
         <Drawer.Screen name="LegalAndTerms" component={LegalAndTermsScreen} />
@@ -229,7 +234,8 @@ function DrawerStack() {
 function Navigation() {
   const { isAuthenticated, isApproved } = useAuth();
   const { token, setToken } = useContext(LocalAuthContext);
-  const { isProfileCompleted } = useContext(ProfileContext);
+  const { isProfileCompleted, driverId, setDriverId } =
+    useContext(ProfileContext);
 
   useEffect(() => {
     async function fetchingToken() {
@@ -238,22 +244,29 @@ function Navigation() {
         setToken(storedToken);
       }
     }
+    async function fetchingDriverId() {
+      const DRIVERID = await fetchDriverId();
+      if (DRIVERID) {
+        setDriverId(DRIVERID);
+      }
+    }
     fetchingToken();
-  }, [token]);
+    fetchingDriverId();
+  }, [token, driverId]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <StatusBar style="dark" backgroundColor="#ac81818c" />
       <NavigationContainer>
-      <AuthenticatedStack />
+        {/* <AuthenticatedStack /> */}
 
-        {/* {!token ? (
+        {!token ? (
           <AuthStack />
         ) : isProfileCompleted ? (
           <AuthenticatedStack />
         ) : (
           <ApprovalStack />
-        )} */}
+        )}
       </NavigationContainer>
     </SafeAreaView>
   );

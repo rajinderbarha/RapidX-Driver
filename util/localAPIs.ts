@@ -3,6 +3,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useContext } from "react";
 import { LocalAuthContext } from "../src/store/LocalAuthContext";
 
+// const SERVERURL = 'http://localhost:8000'
+const SERVERURL = 'https://rw6v05jh-8000.inc1.devtunnels.ms'
+
 interface updatingUserProps {
   phoneNumber: string;
   firstName: string;
@@ -15,7 +18,7 @@ export default async function AuthenticatePhoneNumber(
   setIsNewUser: (value: any) => void,
   setIsProfileCompleted: (value: any) => void
 ) {
-  const URL = "https://rw6v05jh-8000.inc1.devtunnels.ms/api/drivers/signup";
+  const URL =  SERVERURL+"/api/drivers/signup";
 
   try {
     const response = await axios.post(URL, { phone_number: phone });
@@ -83,15 +86,15 @@ export async function UpdateDriver({
   lastName,
   email,
 }: updatingUserProps) {
-  const URL =
-    "https://rw6v05jh-8000.inc1.devtunnels.ms/api/drivers/update-driver-details";
+  const URL =  SERVERURL+"/api/drivers/update-driver-details";
   const gender = "Male";
+  console.log('URL', URL)
   try {
     const response = await fetch(URL, {
       method: "PUT",
       headers: {
         Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjJmZTg4YzdkNWQ0NzljYWIzM2EyYyIsImlhdCI6MTcyMzAxMDI1NCwiZXhwIjoxNzI1NjAyMjU0fQ.cOYiMFDL2XSwsW12Z4iiq-usV4H8P64yeREHdhWXGWI",
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZGU4YzgyYWEzZWVmNGMzZDkwZDYxYSIsImlhdCI6MTcyNTg2MDk5NCwiZXhwIjoxNzI4NDUyOTk0fQ.7KMcbiOnOrHnXvXCzW4fKY4uVKnJ_GCgZmsdKizM1QA",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -163,10 +166,10 @@ export async function UpdateDriver({
 //     throw error; // Re-throw the error after logging it
 //   }
 // }
-
+// https://rw6v05jh-8000.inc1.devtunnels.ms
 export async function UpdateDriverDocuments(formData: FormData, phoneNumber : string) {
   const URL =
-    "https://rw6v05jh-8000.inc1.devtunnels.ms/api/drivers/update-driver-details";
+    SERVERURL+"/api/drivers/update-driver-details";
 
     formData.append("phone_number", phoneNumber)
 
