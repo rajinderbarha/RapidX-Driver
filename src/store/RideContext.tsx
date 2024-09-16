@@ -1,28 +1,6 @@
 import { createContext, PropsWithChildren, useState } from "react";
 
 interface RideContextInterface {
-  // riderDetails: {
-  //   name: string;
-  //   pickupLocation: {
-  //     latitude: number;
-  //     longitude: number;
-  //   };
-  //   dropLocation: {
-  //     latitude: number;
-  //     longitude: number;
-  //   };
-  // } | null;
-  // setRiderDetails: (details: {
-  //   name: string;
-  //   pickupLocation: {
-  //     latitude: number;
-  //     longitude: number;
-  //   };
-  //   dropLocation: {
-  //     latitude: number;
-  //     longitude: number;
-  //   };
-  // }) => void;
   rideConfirmed: boolean;
   setRideConfirmed: (prev: any) => void;
   cancelRide: boolean | null;
@@ -69,7 +47,9 @@ interface RideContextInterface {
       latitude: number;
       longitude: number;
     } 
-  }) => void;
+  } | null) => void;
+  isSocketConnected : boolean;
+  setIsSocketConnected : (state : boolean)=>void
 }
 
 export const RideContext = createContext<RideContextInterface>({
@@ -90,6 +70,9 @@ export const RideContext = createContext<RideContextInterface>({
   setIsRideFinished: () => {},
   incomingRide : false,
   setIncomingRide : ()=>{},
+  isSocketConnected : false,
+  setIsSocketConnected : ()=>{}
+  
 });
 
 export default function RideContextProvide({ children }: PropsWithChildren) {
@@ -102,6 +85,7 @@ export default function RideContextProvide({ children }: PropsWithChildren) {
   const [isRideFinished, setIsRideFinished] = useState(false);
   const [riderDetails, setRiderDetails] =
     useState<RideContextInterface["riderDetails"]>(null);
+    const [isSocketConnected, setIsSocketConnected] = useState(false);
 
 
   function reset() {
@@ -130,7 +114,9 @@ export default function RideContextProvide({ children }: PropsWithChildren) {
     isRideFinished,
     setIsRideFinished,
     incomingRide,
-    setIncomingRide
+    setIncomingRide,
+    isSocketConnected,
+    setIsSocketConnected
   };
   return <RideContext.Provider value={value}>{children}</RideContext.Provider>;
 }

@@ -31,7 +31,9 @@ export default function MainScreen() {
     isRideFinished,
     setIncomingRide,
     setRiderDetails,
-    riderDetails
+    riderDetails,
+    isSocketConnected,
+    setIsSocketConnected
   } = useContext(RideContext);
   const { driverId } = useContext(ProfileContext);
   const isFocused = useIsFocused();
@@ -71,6 +73,9 @@ export default function MainScreen() {
 
   console.log("driver Id =", driverId);
 
+
+ 
+
   useEffect(() => {
     // const newSocket = socket;
     // setSocket(newSocket);
@@ -87,6 +92,8 @@ export default function MainScreen() {
       },
       console.log("socket on")
     );
+
+
 
     // Handle incoming ride request
     newSocket.on("ride-request", (rideDetails: any) => {
@@ -139,7 +146,10 @@ export default function MainScreen() {
     // };
   }, []);
 
-  useEffect(() => {}, [socket]);
+  useEffect(() => {
+    setIsSocketConnected(socket.connected)
+    console.log('isSocketConnected : ', isSocketConnected)
+  }, [socket]);
 
   const handleModalChange = useCallback((index: any) => {
     const modalHeight = index === 0 ? 0.3 : 0.6; // Update according to your snap points

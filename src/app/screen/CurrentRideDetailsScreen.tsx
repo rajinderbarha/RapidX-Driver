@@ -14,11 +14,13 @@ import OrangeButton from "../../ui/OrangeButton";
 import { useNavigation } from "@react-navigation/native";
 import { RideContext } from "../../store/RideContext";
 import getShortAddress from "../../../util/getShortAddress";
+import { ProfileContext } from "../../store/ProfileContext";
+import ProfileInitial from "../components/ProfileInitial";
 
 const CurrentRideDetailsScreen = () => {
   const navigation = useNavigation<any>()
   const {setReachedPickupLocation, nearPickupLocation, riderDetails} = useContext(RideContext)
-
+  const {picture, firstName, lastName} = useContext(ProfileContext)
 
   function reachedPickupPointHandler(){
     if(!nearPickupLocation){
@@ -39,13 +41,23 @@ const CurrentRideDetailsScreen = () => {
       {/* User Information */}
       <View style={styles.profileSection}>
         <View style={styles.userInfo}>
-          <Avatar
-            rounded
-            size="large"
-            source={{ uri: "https://example.com/avatar.jpg" }} // Replace with your image URL
-          />
+        {picture ? (
+            <Avatar
+              rounded
+              size="large"
+              source={{ uri: picture }}
+              containerStyle={styles.avatar}
+            />
+             
+          
+          ) : (
+            <View style={styles.avatarAlt}>
+              <ProfileInitial name={firstName ? firstName : '?'} /> 
+              
+            </View>
+          )}
           <View style={styles.userDetails}>
-            <Text style={styles.userName}>Gorge Jacob</Text>
+            <Text style={styles.userName}>{firstName} {lastName}</Text>
             <View style={styles.ratingContainer}>
               {Array(5)
                 .fill(null)
@@ -90,10 +102,10 @@ const CurrentRideDetailsScreen = () => {
       {/* Ride Details */}
       <View style={styles.rideDetails}>
         <View style={styles.bikeInfo}>
-          <Image
-            source={{ uri: "https://example.com/bike.jpg" }}
-            style={styles.bikeImage} // Replace with your bike image URL
-          />
+        <View style={[styles.avatarAlt, {height : 65, width : 65, marginRight : 10}]}>
+              <ProfileInitial name={riderDetails? riderDetails.userName : '?'} /> 
+              
+            </View>
           <View>
             <Text style={styles.arrivalText}>Your passanger is waiting </Text>
             <Text style={styles.subText}>{pickupAddress.primary}</Text>
@@ -272,6 +284,20 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     paddingVertical: 12,
     borderRadius: 30,
+  },
+  avatar: {
+    borderWidth: 2,
+    borderColor: colors.primary,
+  },
+  avatarAlt : {
+    borderWidth: 2,
+    borderColor: colors.primary,
+    height : 75,
+    width : 75,
+    borderRadius : 50,
+    alignItems : 'center',
+    justifyContent : 'center'
+
   },
 });
 

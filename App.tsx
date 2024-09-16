@@ -133,7 +133,7 @@ function ApprovalStack() {
  function AuthenticatedStack() {
   const { setEmail, setFirstName, setLastName, setPhoneNumber, driverId } =
     useContext(ProfileContext);
-  const { riderDetails, setRideConfirmed, incomingRide, setIncomingRide } =
+  const { riderDetails, setRideConfirmed, incomingRide, setIncomingRide, setRiderDetails } =
     useContext(RideContext);
     const {location} = useContext(LocationContext)
 
@@ -174,6 +174,8 @@ function ApprovalStack() {
   const handleCancel = () => {
     setIncomingRide(false);
     // Handle ride cancellation logic here
+    setRideConfirmed(false)
+    setRiderDetails(null)
     socket.emit('cancel-ride', {
       rideId: riderDetails?.ride_id,
       cancelled_by: 'driver',  // Change this depending on who cancels

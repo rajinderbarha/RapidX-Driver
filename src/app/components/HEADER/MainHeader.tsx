@@ -10,7 +10,7 @@ import * as Notification from "expo-notifications"
 export default function MainHeader() {
 
   const navigation = useNavigation<any>()
-  const {setIncomingRide} = useContext(RideContext)
+  const {setIncomingRide, isSocketConnected} = useContext(RideContext)
 
   
   async function sendNotification(){
@@ -56,8 +56,8 @@ export default function MainHeader() {
         </View>
         <View style={styles.iconButtonContainer}>
           <IconButton
-            name="heart-outline"
-            color="grey"
+            name={isSocketConnected ? "checkmark-circle": "close-circle-sharp"}
+            color={isSocketConnected ? 'green' : 'red'}
             size={24}
             onPress={() => {setIncomingRide(true); sendNotification()}}
           />

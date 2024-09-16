@@ -4,6 +4,8 @@ import MapViewDirections from "react-native-maps-directions";
 import { RideContext } from "../../../store/RideContext";
 import { LocationContext } from "../../../store/LocationContext";
 import calculateDistance from "../../../../util/calculateDistance";
+import { ProfileContext } from "../../../store/ProfileContext";
+import { driverLocationUpdate } from "../../../../util/socket";
 
 const GOOGLE_API_kEY = "AIzaSyCV2NRNl0uVeY37ID1gIoYgJexr9SBDn2Q";
 const { width, height } = Dimensions.get("window");
@@ -30,7 +32,7 @@ export default function AddMapViewDirections({
 
   const {setNearPickupLocation, setNearDropLocation, reachedPickupLocation} = useContext(RideContext)
 const {setDistance} = useContext(LocationContext)
-
+const {driverId} = useContext(ProfileContext)
 
 
   return (
@@ -58,6 +60,7 @@ const {setDistance} = useContext(LocationContext)
         const endLocation = result.legs[0].end_location;
         const distance = calculateDistance(currentLocation,endLocation);
         console.log('result : ', distance)
+        driverLocationUpdate(currentLocation, driverId)
         setDistance(distance.toFixed(2))
         if(reachedPickupLocation && distance < 0.100){
           setNearDropLocation(true)
