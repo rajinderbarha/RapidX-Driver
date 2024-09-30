@@ -6,14 +6,14 @@ import { RideContext } from "../../../store/RideContext";
 interface RideRequestModalProps {
   isVisible: boolean;
   onConfirm: () => void;
-  onCancel: () => void;
+  onReject: () => void;
 
 }
 
 export default function RideRequestModal({
   isVisible,
   onConfirm,
-  onCancel,
+  onReject,
 
 }: RideRequestModalProps) {
 
@@ -38,7 +38,7 @@ const {riderDetails} = useContext(RideContext)
           {"\n"}Please go quick.
         </Text>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
+          <TouchableOpacity style={styles.cancelButton} onPress={onReject}>
             <Text style={styles.cancelButtonText}>✘</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>

@@ -50,6 +50,8 @@ interface RideContextInterface {
   } | null) => void;
   isSocketConnected : boolean;
   setIsSocketConnected : (state : boolean)=>void
+  isPassangerPicked : boolean;
+  setIsPassangerPicked : (state : boolean)=>void
 }
 
 export const RideContext = createContext<RideContextInterface>({
@@ -71,7 +73,9 @@ export const RideContext = createContext<RideContextInterface>({
   incomingRide : false,
   setIncomingRide : ()=>{},
   isSocketConnected : false,
-  setIsSocketConnected : ()=>{}
+  setIsSocketConnected : ()=>{},
+  isPassangerPicked : false,
+  setIsPassangerPicked : ()=>{}
   
 });
 
@@ -86,6 +90,7 @@ export default function RideContextProvide({ children }: PropsWithChildren) {
   const [riderDetails, setRiderDetails] =
     useState<RideContextInterface["riderDetails"]>(null);
     const [isSocketConnected, setIsSocketConnected] = useState(false);
+    const [isPassangerPicked, setIsPassangerPicked] = useState(false);
 
 
   function reset() {
@@ -116,7 +121,9 @@ export default function RideContextProvide({ children }: PropsWithChildren) {
     incomingRide,
     setIncomingRide,
     isSocketConnected,
-    setIsSocketConnected
+    setIsSocketConnected,
+    isPassangerPicked,
+    setIsPassangerPicked
   };
   return <RideContext.Provider value={value}>{children}</RideContext.Provider>;
 }

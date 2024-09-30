@@ -18,7 +18,8 @@ export default async function AuthenticatePhoneNumber(
   setIsNewUser: (value: any) => void,
   setIsProfileCompleted: (value: any) => void
 ) {
-  const URL =  SERVERURL+"/api/drivers/signup";
+  const URL =  SERVERURL+"/api/drivers/signup-without-otp";
+  // const URL =  SERVERURL+"/api/drivers/signup";
 
   try {
     const response = await axios.post(URL, { phone_number: phone });

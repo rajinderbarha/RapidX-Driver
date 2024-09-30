@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, AppState } from "react-native";
+import { StyleSheet, Text, View, AppState, Button, Alert } from "react-native";
 import MainHeader from "../components/HEADER/MainHeader";
 import Map from "../components/Map/Map";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
@@ -18,8 +18,6 @@ import io from "socket.io-client";
 import { ProfileContext } from "../../store/ProfileContext";
 import socket from "../../../util/socket";
 
-const newSocket = socket;
-
 const { height } = Dimensions.get("screen");
 export default function MainScreen() {
   const [buttonBottomPosition, setButtonBottomPosition] = useState(20);
@@ -33,13 +31,18 @@ export default function MainScreen() {
     setRiderDetails,
     riderDetails,
     isSocketConnected,
-    setIsSocketConnected
+    setIsSocketConnected,
+    reachedPickupLocation,
+    setReachedPickupLocation,
+    setIsPassangerPicked,
+    isPassangerPicked,
+    reset
   } = useContext(RideContext);
   const { driverId } = useContext(ProfileContext);
   const isFocused = useIsFocused();
   const navigation = useNavigation<any>();
 
-  console.log('rider :', riderDetails)
+  console.log("rider :", riderDetails);
   // const [sockets, setSocket] = useState<any>();
   // const [rideRequest, setRideRequest] = useState(null);
   // const [isAccepted, setIsAccepted] = useState(false);
@@ -73,16 +76,21 @@ export default function MainScreen() {
 
   console.log("driver Id =", driverId);
 
-
- 
+  function userPickedHandler() {
+    socket.emit("userPickedUp", {
+      rideId: riderDetails?.ride_id,
+      driverId: driverId,
+    });
+    setIsPassangerPicked(true)
+  }
 
   useEffect(() => {
     // const newSocket = socket;
     // setSocket(newSocket);
 
     // Emit event when driver comes online
-    newSocket.emit(
-      "driver-online",
+    socket.emit(
+      "driverConnected",
       {
         driverId: driverId,
         location: {
@@ -93,23 +101,65 @@ export default function MainScreen() {
       console.log("socket on")
     );
 
-
-
-    // Handle incoming ride request
-    newSocket.on("ride-request", (rideDetails: any) => {
+    // Listen for new ride requests
+    socket.on("rideRequest", (rideDetails: any) => {
       console.log("Ride request received:", rideDetails);
       setRiderDetails({
-        userName: rideDetails.user_first_name,
-        distance : rideDetails.distance,
-        dropAddress : rideDetails.dropAddress,
-        duration : rideDetails.duration,
-        pickupAddress : rideDetails.pickupAddress,
-        user_destination : rideDetails.user_destination,
-        ride_id : rideDetails._id,
-        user_origin : rideDetails.user_origin
+        userName: rideDetails.firstName,
+        distance: rideDetails.distance,
+        dropAddress: rideDetails.dropAddress,
+        duration: rideDetails.duration,
+        pickupAddress: rideDetails.pickupAddress,
+        user_destination: rideDetails.user_destination,
+        ride_id: rideDetails.rideId,
+        user_origin: rideDetails.user_origin,
       });
       setIncomingRide(true);
     });
+
+    // Listen for ride confirmation
+    socket.on("rideConfirmed", (rideDetails: any) => {
+      console.log("Ride confirmed for driver:", rideDetails);
+      // setRiderDetails({
+      //   userName: rideDetails.firstName,
+      //   distance : rideDetails.distance,
+      //   dropAddress : rideDetails.dropAddress,
+      //   duration : rideDetails.duration,
+      //   pickupAddress : rideDetails.pickupAddress,
+      //   user_destination : rideDetails.user_destination,
+      //   ride_id : rideDetails.rideId,
+      //   user_origin : rideDetails.user_origin
+      // });
+    });
+
+    socket.on("rideCancelled", (data) => {
+      console.log(data.message);
+      console.log("Ride was cancelled by:", data.cancelledBy);
+      reset()
+      Alert.alert(`Ride was cancelled by ${data.cancelledBy}`);
+      navigation.navigate("Main");
+    });
+    
+
+    // return () => {
+    //   if (socket) socket.disconnect();
+    // };
+
+    // Handle incoming ride request
+    // newSocket.on("ride-request", (rideDetails: any) => {
+    //   console.log("Ride request received:", rideDetails);
+    //   setRiderDetails({
+    //     userName: rideDetails.user_first_name,
+    //     distance : rideDetails.distance,
+    //     dropAddress : rideDetails.dropAddress,
+    //     duration : rideDetails.duration,
+    //     pickupAddress : rideDetails.pickupAddress,
+    //     user_destination : rideDetails.user_destination,
+    //     ride_id : rideDetails._id,
+    //     user_origin : rideDetails.user_origin
+    //   });
+    //   setIncomingRide(true);
+    // });
 
     // Handle driver location updates from the server
     // newSocket.on('driver-location-updated', (location) => {
@@ -147,8 +197,8 @@ export default function MainScreen() {
   }, []);
 
   useEffect(() => {
-    setIsSocketConnected(socket.connected)
-    console.log('isSocketConnected : ', isSocketConnected)
+    setIsSocketConnected(socket.connected);
+    console.log("isSocketConnected : ", isSocketConnected);
   }, [socket]);
 
   const handleModalChange = useCallback((index: any) => {
@@ -176,6 +226,7 @@ export default function MainScreen() {
         </View>
         <View style={styles.mapContainer}>
           <Map markerType={"pickUp"} location={null} reff={mapRef} />
+         { reachedPickupLocation && !isPassangerPicked &&<Button title="Picked Up User" onPress={userPickedHandler} />}
           {rideConfirmed && (
             <OrangeButton
               onPress={() => {

@@ -1,31 +1,28 @@
 import React, { useContext } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import IconButton from "../../../ui/IconButton";
 import { useNavigation } from "@react-navigation/native";
 import { RideContext } from "../../../store/RideContext";
-import * as Notification from "expo-notifications"
-
+import * as Notification from "expo-notifications";
 
 export default function MainHeader() {
+  const navigation = useNavigation<any>();
+  const { setIncomingRide, isSocketConnected, setIsSocketConnected } =
+    useContext(RideContext);
 
-  const navigation = useNavigation<any>()
-  const {setIncomingRide, isSocketConnected} = useContext(RideContext)
-
-  
-  async function sendNotification(){
+  async function sendNotification() {
     await Notification.scheduleNotificationAsync({
-      content : {
-        title : 'notification',
-        body : 'hi'
+      content: {
+        title: "notification",
+        body: "hi",
       },
-      trigger : {
-        seconds : 1
-      }
-    })
-    console.log('notification sent')
+      trigger: {
+        seconds: 1,
+      },
+    });
+    console.log("notification sent");
   }
-
 
   return (
     <View style={styles.root}>
@@ -34,14 +31,11 @@ export default function MainHeader() {
           name="menu"
           size={28}
           color="grey"
-          onPress={() => navigation.toggleDrawer() }
+          onPress={() => navigation.toggleDrawer()}
         />
       </View>
       <Pressable
-        style={({ pressed }) => [
-          styles.input,
-          pressed && styles.pressedInput,
-        ]}
+        style={({ pressed }) => [styles.input, pressed && styles.pressedInput]}
         onPress={() => console.log("Location pressed")}
       >
         <View style={styles.locationContainer}>
@@ -55,11 +49,15 @@ export default function MainHeader() {
           </Text>
         </View>
         <View style={styles.iconButtonContainer}>
-          <IconButton
-            name={isSocketConnected ? "checkmark-circle": "close-circle-sharp"}
-            color={isSocketConnected ? 'green' : 'red'}
-            size={24}
-            onPress={() => {setIncomingRide(true); sendNotification()}}
+          <Switch
+            trackColor={{ false: "#767577", true: "#81b0ff" }} // Custom track color
+            thumbColor={isSocketConnected ? "green" : "red"} // Custom thumb color
+            ios_backgroundColor="#3e3e3e" // iOS background color
+            // onValueChange={() => {
+            //   setIsSocketConnected(!isSocketConnected);
+            // }} // Function to handle value change
+            value={isSocketConnected} // Current switch value
+
           />
         </View>
       </Pressable>

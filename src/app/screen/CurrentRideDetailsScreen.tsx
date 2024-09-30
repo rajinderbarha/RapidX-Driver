@@ -16,48 +16,56 @@ import { RideContext } from "../../store/RideContext";
 import getShortAddress from "../../../util/getShortAddress";
 import { ProfileContext } from "../../store/ProfileContext";
 import ProfileInitial from "../components/ProfileInitial";
+import socket from "../../../util/socket";
 
 const CurrentRideDetailsScreen = () => {
-  const navigation = useNavigation<any>()
-  const {setReachedPickupLocation, nearPickupLocation, riderDetails} = useContext(RideContext)
-  const {picture, firstName, lastName} = useContext(ProfileContext)
+  const navigation = useNavigation<any>();
+  const { setReachedPickupLocation, nearPickupLocation, riderDetails } =
+    useContext(RideContext);
+  const { picture, firstName, lastName, driverId } = useContext(ProfileContext);
 
-  function reachedPickupPointHandler(){
-    if(!nearPickupLocation){
-      Alert.alert("You need to get closer to the passanger")
-      return
+  function notifyUser() {
+    socket.emit("driverReachedUser", {
+      rideId: riderDetails?.ride_id,
+      driverId: driverId,
+    });
+    console.log("notificaton : Driver reached user");
+  }
+
+  function reachedPickupPointHandler() {
+    if (!nearPickupLocation) {
+      Alert.alert("You need to get closer to the passanger");
+      return;
     }
-    navigation.navigate('Main');
-    setReachedPickupLocation(true)
-  };
-  
-  
-  const pickupAddress = getShortAddress(riderDetails?.pickupAddress)
-  const dropAddress = getShortAddress(riderDetails?.dropAddress)
+    notifyUser();
+    navigation.navigate("Main");
+    setReachedPickupLocation(true);
+  }
 
+  const pickupAddress = getShortAddress(riderDetails?.pickupAddress);
+  const dropAddress = getShortAddress(riderDetails?.dropAddress);
 
   return (
     <ScrollView style={styles.container}>
       {/* User Information */}
       <View style={styles.profileSection}>
         <View style={styles.userInfo}>
-        {picture ? (
+          {picture ? (
             <Avatar
               rounded
               size="large"
               source={{ uri: picture }}
               containerStyle={styles.avatar}
             />
-             
-          
           ) : (
             <View style={styles.avatarAlt}>
-              <ProfileInitial name={firstName ? firstName : '?'} /> 
-              
+              <ProfileInitial name={firstName ? firstName : "?"} />
             </View>
           )}
           <View style={styles.userDetails}>
-            <Text style={styles.userName}>{firstName} {lastName}</Text>
+            <Text style={styles.userName}>
+              {firstName} {lastName}
+            </Text>
             <View style={styles.ratingContainer}>
               {Array(5)
                 .fill(null)
@@ -76,7 +84,6 @@ const CurrentRideDetailsScreen = () => {
         <View style={styles.balanceSection}>
           <Text style={styles.balanceText}>$2026</Text>
           <Text style={styles.subText}>Available balance</Text>
-         
         </View>
       </View>
 
@@ -102,10 +109,14 @@ const CurrentRideDetailsScreen = () => {
       {/* Ride Details */}
       <View style={styles.rideDetails}>
         <View style={styles.bikeInfo}>
-        <View style={[styles.avatarAlt, {height : 65, width : 65, marginRight : 10}]}>
-              <ProfileInitial name={riderDetails? riderDetails.userName : '?'} /> 
-              
-            </View>
+          <View
+            style={[
+              styles.avatarAlt,
+              { height: 65, width: 65, marginRight: 10 },
+            ]}
+          >
+            <ProfileInitial name={riderDetails ? riderDetails.userName : "?"} />
+          </View>
           <View>
             <Text style={styles.arrivalText}>Your passanger is waiting </Text>
             <Text style={styles.subText}>{pickupAddress.primary}</Text>
@@ -140,10 +151,22 @@ const CurrentRideDetailsScreen = () => {
           <Text style={styles.amountText}>$50.00</Text>
         </View>
       </View>
-      <View style = {{ height : 200, alignItems : 'center', justifyContent : 'space-around'}}>
-        <OrangeButton  text="Reached PickUp Point" onPress={reachedPickupPointHandler} style={{backgroundColor : '#0c4704'}}/>
+      <View
+        style={{
+          height: 200,
+          alignItems: "center",
+          justifyContent: "space-around",
+        }}
+      >
         <OrangeButton
-          onPress={() => {navigation.navigate('Ride Cancel')}}
+          text="Reached PickUp Point"
+          onPress={reachedPickupPointHandler}
+          style={{ backgroundColor: "#0c4704" }}
+        />
+        <OrangeButton
+          onPress={() => {
+            navigation.navigate("Ride Cancel");
+          }}
           text="Cancel Ride"
           style={{ bottom: 10 }}
         />
@@ -162,23 +185,23 @@ const styles = StyleSheet.create({
     // flexDirection: "row",
     justifyContent: "space-between",
     marginVertical: 16,
-    borderColor : colors.primary,
-    borderWidth : 0.5,
-    height : '20%'
+    borderColor: colors.primary,
+    borderWidth: 0.5,
+    height: "20%",
   },
   userInfo: {
     flexDirection: "row",
     alignItems: "center",
-    flex : 1,
+    flex: 1,
     // backgroundColor : 'red'
   },
   userDetails: {
     marginLeft: 16,
     // backgroundColor : 'yellow',
-    flex : 1,
-    height : '80%',
-    justifyContent : 'center',
-    gap : 3
+    flex: 1,
+    height: "80%",
+    justifyContent: "center",
+    gap: 3,
   },
   userName: {
     fontSize: 21,
@@ -232,10 +255,10 @@ const styles = StyleSheet.create({
   bikeImage: {
     width: 60,
     height: 60,
-    borderRadius : 30 ,
+    borderRadius: 30,
     marginRight: 16,
-    borderWidth : 1,
-    borderColor : '#ccc'
+    borderWidth: 1,
+    borderColor: "#ccc",
     // backgroundColor : 'grey'
   },
   arrivalText: {
@@ -289,15 +312,14 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.primary,
   },
-  avatarAlt : {
+  avatarAlt: {
     borderWidth: 2,
     borderColor: colors.primary,
-    height : 75,
-    width : 75,
-    borderRadius : 50,
-    alignItems : 'center',
-    justifyContent : 'center'
-
+    height: 75,
+    width: 75,
+    borderRadius: 50,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

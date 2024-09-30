@@ -8,6 +8,8 @@ import { RideContext } from "../../../store/RideContext";
 import { LocationContext } from "../../../store/LocationContext";
 import { colors } from "../../../../constants/colors";
 import getShortAddress from "../../../../util/getShortAddress";
+import socket from "../../../../util/socket";
+import { ProfileContext } from "../../../store/ProfileContext";
 
 interface iconProps {
   name: string;
@@ -20,6 +22,7 @@ const OnFinishedRideModal = ({ onChange, isFocused }: any) => {
   // const { pickupAddress, dropAddress, fare } = useContext(LocationContext);
   const { setReachedPickupLocation, riderDetails, setIsRideFinished, setRideConfirmed, setNearDropLocation } =
     useContext(RideContext);
+    const { driverId } = useContext(ProfileContext);
 
   const snapPoints = ["10%", "30%"];
 
@@ -31,6 +34,12 @@ const OnFinishedRideModal = ({ onChange, isFocused }: any) => {
   const pickupAddress = getShortAddress(riderDetails?.pickupAddress);
   const dropAddress = getShortAddress(riderDetails?.dropAddress);
 
+  function reachedDestination(){
+    socket.emit("reachedDestination",{
+      rideId: riderDetails?.ride_id,
+      driverId: driverId,
+    })
+  }
 
 
   function AddIcon({ name, type }: iconProps) {
@@ -45,9 +54,6 @@ const OnFinishedRideModal = ({ onChange, isFocused }: any) => {
     );
   }
 
-  function ReachedPickupHandler() {
-    setReachedPickupLocation(true);
-  }
 
   //   const handleRideCompletion = () => {
   //     setRideIsCompleted(true);
@@ -90,6 +96,7 @@ const OnFinishedRideModal = ({ onChange, isFocused }: any) => {
         <OrangeButton
           text="Finished Ride"
           onPress={() => {
+            reachedDestination()
             setIsRideFinished(true);
             setRideConfirmed(false);
             setNearDropLocation(false);

@@ -5,7 +5,7 @@ import { RideContext } from "../../../store/RideContext";
 import { LocationContext } from "../../../store/LocationContext";
 import calculateDistance from "../../../../util/calculateDistance";
 import { ProfileContext } from "../../../store/ProfileContext";
-import { driverLocationUpdate } from "../../../../util/socket";
+import socket from "../../../../util/socket";
 
 const GOOGLE_API_kEY = "AIzaSyCV2NRNl0uVeY37ID1gIoYgJexr9SBDn2Q";
 const { width, height } = Dimensions.get("window");
@@ -30,9 +30,20 @@ export default function AddMapViewDirections({
   color,
 }: DirectionProps) {
 
-  const {setNearPickupLocation, setNearDropLocation, reachedPickupLocation} = useContext(RideContext)
-const {setDistance} = useContext(LocationContext)
+  const {setNearPickupLocation, setNearDropLocation, reachedPickupLocation, riderDetails } = useContext(RideContext)
+const {setDistance, location} = useContext(LocationContext)
 const {driverId} = useContext(ProfileContext)
+
+
+
+function updateLiveLocation(current_location : any){
+  socket.emit('driverLocationUpdate',{
+    rideId : riderDetails?.ride_id,
+    driverId : driverId,
+    location : current_location
+  })
+  console.log('updating driver location')
+}
 
 
   return (
@@ -60,7 +71,7 @@ const {driverId} = useContext(ProfileContext)
         const endLocation = result.legs[0].end_location;
         const distance = calculateDistance(currentLocation,endLocation);
         console.log('result : ', distance)
-        driverLocationUpdate(currentLocation, driverId)
+        updateLiveLocation(currentLocation)
         setDistance(distance.toFixed(2))
         if(reachedPickupLocation && distance < 0.100){
           setNearDropLocation(true)

@@ -160,10 +160,10 @@ function ApprovalStack() {
   const handleConfirm = () => {
     setRideConfirmed(true);
     setIncomingRide(false);
-    socket.emit('ride-accept', {
-      driverId: driverId,
+    socket.emit('acceptRide', {
       rideId: riderDetails?.ride_id,
-      location : {
+      driverId: driverId,
+      driver_current_location : {
         longitude : location?.coords.longitude,
         latitude : location?.coords.latitude
       }
@@ -171,16 +171,16 @@ function ApprovalStack() {
     console.log('Ride accepted by driver with id:', driverId);
   };
 
-  const handleCancel = () => {
+  const handleReject = () => {
     setIncomingRide(false);
     // Handle ride cancellation logic here
     setRideConfirmed(false)
     setRiderDetails(null)
-    socket.emit('cancel-ride', {
+    socket.emit('rejectRide', {
       rideId: riderDetails?.ride_id,
-      cancelled_by: 'driver',  // Change this depending on who cancels
+      driverId: driverId,
   });
-  console.log(`Cancel ride event emitted for ride ID: ${riderDetails?.ride_id}`);
+  console.log(`Reject ride event emitted for ride ID: ${riderDetails?.ride_id}`);
   };
 
   return (
@@ -188,7 +188,7 @@ function ApprovalStack() {
       <RideRequestModal
         isVisible={incomingRide}
         onConfirm={handleConfirm}
-        onCancel={handleCancel}
+        onReject={handleReject}
       />
       <Stack.Navigator
         initialRouteName="Main"
